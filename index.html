@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Course Catalog</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet" />
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --navy:   #1a2744;
+    --blue:   #2f5bea;
+    --sky:    #e8eeff;
+    --white:  #ffffff;
+    --gray:   #f4f5f8;
+    --border: #dde1ec;
+    --text:   #1a2744;
+    --muted:  #6b7494;
+    --radius: 10px;
+    --shadow: 0 2px 12px rgba(26,39,68,.08);
+  }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--gray);
+    color: var(--text);
+    min-height: 100vh;
+  }
+
+  header {
+    background: var(--navy);
+    padding: 28px 32px 24px;
+  }
+  header h1 {
+    font-family: 'DM Serif Display', serif;
+    font-size: 1.9rem;
+    color: var(--white);
+    letter-spacing: -.3px;
+  }
+  header p { color: #a0aece; margin-top: 4px; font-size: .92rem; }
+
+  .page { max-width: 1200px; margin: 0 auto; padding: 24px 20px 48px; }
+
+  /* Loading & error */
+  .status {
+    text-align: center;
+    padding: 64px 20px;
+    color: var(--muted);
+    font-size: 1rem;
+  }
+  .status.error { color: #c0392b; }
+  .spinner {
+    width: 36px; height: 36px;
+    border: 3px solid var(--border);
+    border-top-color: var(--blue);
+    border-radius: 50%;
+    animation: spin .7s linear infinite;
+    margin: 0 auto 16px;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* Search */
+  .search-wrap { position: relative; margin-bottom: 18px; }
+  .search-wrap svg {
+    position: absolute; left: 14px; top: 50%;
+    transform: translateY(-50%);
+    color: var(--muted); pointer-events: none;
+  }
+  #search {
+    width: 100%; padding: 12px 14px 12px 42px;
+    border: 1.5px solid var(--border); border-radius: var(--radius);
+    font-family: inherit; font-size: .95rem;
+    background: var(--white); color: var(--text);
+    transition: border-color .15s;
+  }
+  #search:focus { outline: none; border-color: var(--blue); }
+
+  /* Filters */
+  .filters { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 22px; align-items: center; }
+  .filters select {
+    padding: 9px 32px 9px 12px;
+    border: 1.5px solid var(--border); border-radius: var(--radius);
+    font-family: inherit; font-size: .88rem;
+    background: var(--white); color: var(--text);
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%236b7494' stroke-width='2.5'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+    background-repeat: no-repeat; background-position: right 10px center;
+    cursor: pointer; transition: border-color .15s; min-width: 150px;
+  }
+  .filters select:focus { outline: none; border-color: var(--blue); }
+  #clearBtn {
+    margin-left: auto; padding: 9px 16px;
+    border: 1.5px solid var(--border); border-radius: var(--radius);
+    font-family: inherit; font-size: .88rem;
+    background: var(--white); color: var(--muted);
+    cursor: pointer; transition: all .15s;
+  }
+  #clearBtn:hover { border-color: var(--blue); color: var(--blue); }
+
+  .results-bar { font-size: .88rem; color: var(--muted); margin-bottom: 16px; }
+  .results-bar strong { color: var(--text); }
+
+  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 16px; }
+
+  .card {
+    background: var(--white); border: 1.5px solid var(--border);
+    border-radius: var(--radius); padding: 20px;
+    box-shadow: var(--shadow); transition: box-shadow .2s, border-color .2s, transform .15s;
+  }
+  .card:hover {
+    box-shadow: 0 6px 24px rgba(47,91,234,.12);
+    border-color: #c2ccf5; transform: translateY(-2px);
+  }
+  .card-top { display: flex; justify-content: space-between; align-items: flex-start; gap: 8px; margin-bottom: 10px; }
+  .course-num {
+    font-size: .78rem; font-weight: 600; color: var(--blue);
+    background: var(--sky); padding: 3px 9px; border-radius: 20px; white-space: nowrap;
+  }
+  .credit-badge {
+    font-size: .76rem; font-weight: 500; color: var(--muted);
+    background: var(--gray); padding: 3px 9px; border-radius: 20px; white-space: nowrap;
+  }
+  .card h2 {
+    font-family: 'DM Serif Display', serif; font-size: 1.05rem;
+    line-height: 1.35; margin-bottom: 6px; color: var(--navy);
+  }
+  .school-name { font-size: .82rem; color: var(--muted); margin-bottom: 10px; }
+  .description {
+    font-size: .88rem; line-height: 1.6; color: #444c6a;
+    display: -webkit-box; -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical; overflow: hidden; margin-bottom: 14px;
+  }
+  .tags { display: flex; flex-wrap: wrap; gap: 6px; }
+  .tag {
+    font-size: .74rem; font-weight: 500; padding: 3px 9px;
+    border-radius: 20px; border: 1px solid var(--border);
+    color: var(--muted); background: var(--white);
+  }
+  .tag.grade  { border-color: #c8e6c9; color: #2e7d32; background: #f1f8f1; }
+  .tag.core   { border-color: #ffe0b2; color: #e65100; background: #fff8f3; }
+  .tag.path   { border-color: #e1bee7; color: #6a1b9a; background: #faf4fc; }
+  .tag.prog   { border-color: #b3e5fc; color: #01579b; background: #f0faff; }
+
+  .empty { text-align: center; padding: 64px 20px; color: var(--muted); grid-column: 1/-1; }
+  .empty svg { opacity: .3; margin-bottom: 16px; }
+
+  .controls { display: none; }
+  .controls.visible { display: block; }
+
+  @media (max-width: 600px) {
+    header { padding: 20px 16px; }
+    .page  { padding: 16px 12px 40px; }
+    .grid  { grid-template-columns: 1fr; }
+    #clearBtn { margin-left: 0; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Course Catalog</h1>
+  <p>Browse and filter available courses</p>
+</header>
+
+<div class="page">
+
+  <!-- Loading state -->
+  <div class="status" id="status">
+    <div class="spinner"></div>
+    <p>Loading courses…</p>
+  </div>
+
+  <!-- Controls (hidden until data loads) -->
+  <div class="controls" id="controls">
+    <div class="search-wrap">
+      <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+        <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+      </svg>
+      <input id="search" type="search" placeholder="Search by course name or number…" />
+    </div>
+
+    <div class="filters">
+      <select id="filterSchool"><option value="">All Schools</option></select>
+      <select id="filterGrade"><option value="">All Grades</option></select>
+      <select id="filterCredit"><option value="">All Credit Types</option></select>
+      <select id="filterPathway"><option value="">All Pathways</option></select>
+      <select id="filterProgram"><option value="">All Programs</option></select>
+      <select id="filterCore">
+        <option value="">Core Grad Credit?</option>
+        <option value="yes">Yes</option>
+        <option value="no">No</option>
+      </select>
+      <button id="clearBtn">✕ Clear filters</button>
+    </div>
+
+    <div class="results-bar"><strong id="countLabel">0</strong> courses found</div>
+  </div>
+
+  <div class="grid" id="grid"></div>
+</div>
+
+<script>
+  // ============================================================
+  //  CONFIG — update these two values if your sheet ever changes
+  // ============================================================
+  const SHEET_ID  = "1oDqMjM300awYb06w5xyPnwaNnGgNcI8O0cQL57Y5VfQ";
+  const SHEET_TAB = "Round1Data"; // ← update this to match your tab name
+  // ============================================================
+
+  const CSV_URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(SHEET_TAB)}`;
+
+  let ALL_COURSES = [];
+
+  // ── Fetch & parse CSV ────────────────────────────────────
+  async function loadData() {
+    try {
+      const res = await fetch(CSV_URL);
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      const text = await res.text();
+      ALL_COURSES = parseCSV(text);
+      init();
+    } catch (err) {
+      document.getElementById("status").innerHTML =
+        `<p class="error">⚠️ Could not load course data.<br><small>${err.message}</small><br><br>Make sure the Google Sheet is set to <strong>"Anyone with the link can view"</strong>.</p>`;
+      document.getElementById("status").classList.add("error");
+    }
+  }
+
+  // Simple CSV parser that handles quoted fields
+  function parseCSV(text) {
+    const lines = [];
+    let cur = "", inQ = false;
+    const rows = [];
+    let cells = [];
+
+    for (let i = 0; i < text.length; i++) {
+      const ch = text[i];
+      if (ch === '"') {
+        if (inQ && text[i+1] === '"') { cur += '"'; i++; }
+        else inQ = !inQ;
+      } else if (ch === ',' && !inQ) {
+        cells.push(cur); cur = "";
+      } else if ((ch === '\n' || ch === '\r') && !inQ) {
+        cells.push(cur); cur = "";
+        if (cells.some(c => c !== "")) rows.push(cells);
+        cells = [];
+        if (ch === '\r' && text[i+1] === '\n') i++;
+      } else {
+        cur += ch;
+      }
+    }
+    if (cur || cells.length) { cells.push(cur); rows.push(cells); }
+
+    if (rows.length < 2) return [];
+    const headers = rows[0].map(h => h.trim());
+    return rows.slice(1).map(row => {
+      const obj = {};
+      headers.forEach((h, i) => { obj[h] = (row[i] || "").trim(); });
+      return obj;
+    });
+  }
+
+  // ── Init after data loads ────────────────────────────────
+  function init() {
+    document.getElementById("status").style.display = "none";
+    document.getElementById("controls").classList.add("visible");
+
+    populateSelect("filterSchool",  "School Name");
+    populateSelect("filterGrade",   "Grade");
+    populateSelect("filterCredit",  "CreditType");
+    populateSelect("filterPathway", "Pathways");
+    populateSelect("filterProgram", "Programs");
+
+    [
+      document.getElementById("search"),
+      document.getElementById("filterSchool"),
+      document.getElementById("filterGrade"),
+      document.getElementById("filterCredit"),
+      document.getElementById("filterPathway"),
+      document.getElementById("filterProgram"),
+      document.getElementById("filterCore"),
+    ].forEach(el => el.addEventListener("input", render));
+
+    document.getElementById("clearBtn").addEventListener("click", () => {
+      document.getElementById("search").value = "";
+      ["filterSchool","filterGrade","filterCredit","filterPathway","filterProgram","filterCore"]
+        .forEach(id => document.getElementById(id).value = "");
+      render();
+    });
+
+    render();
+  }
+
+  function populateSelect(id, field) {
+    const sel = document.getElementById(id);
+    const vals = new Set();
+    ALL_COURSES.forEach(c => {
+      (c[field] || "").split(",").forEach(v => { const t = v.trim(); if (t) vals.add(t); });
+    });
+    [...vals].sort().forEach(v => {
+      const opt = document.createElement("option");
+      opt.value = v; opt.textContent = v;
+      sel.appendChild(opt);
+    });
+  }
+
+  // ── Render cards ─────────────────────────────────────────
+  function matches(course, filterVal, field) {
+    if (!filterVal) return true;
+    return (course[field] || "").split(",").some(v => v.trim().toLowerCase() === filterVal.toLowerCase());
+  }
+
+  function render() {
+    const q      = document.getElementById("search").value.trim().toLowerCase();
+    const school = document.getElementById("filterSchool").value;
+    const grade  = document.getElementById("filterGrade").value;
+    const credit = document.getElementById("filterCredit").value;
+    const path   = document.getElementById("filterPathway").value;
+    const prog   = document.getElementById("filterProgram").value;
+    const core   = document.getElementById("filterCore").value;
+
+    const filtered = ALL_COURSES.filter(c => {
+      if (q && !([c["Name"],c["Course Number"],c["Course Description"]].some(f => (f||"").toLowerCase().includes(q)))) return false;
+      if (!matches(c, school, "School Name")) return false;
+      if (!matches(c, grade,  "Grade"))       return false;
+      if (!matches(c, credit, "CreditType"))  return false;
+      if (!matches(c, path,   "Pathways"))    return false;
+      if (!matches(c, prog,   "Programs"))    return false;
+      if (core) {
+        const val = (c["Core Graduation Credit"] || "").toLowerCase();
+        const isYes = ["yes","true","1","x"].some(v => val.includes(v));
+        if (core === "yes" && !isYes) return false;
+        if (core === "no"  &&  isYes) return false;
+      }
+      return true;
+    });
+
+    document.getElementById("countLabel").textContent = filtered.length;
+    const grid = document.getElementById("grid");
+
+    if (filtered.length === 0) {
+      grid.innerHTML = `<div class="empty">
+        <svg width="48" height="48" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+          <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+        </svg>
+        <p>No courses match your filters.<br>Try clearing some filters.</p>
+      </div>`;
+      return;
+    }
+
+    grid.innerHTML = filtered.map(c => {
+      const tags = [];
+      if (c["Grade"]) tags.push(`<span class="tag grade">Grade ${esc(c["Grade"])}</span>`);
+      if (["yes","true","1","x"].some(v => (c["Core Graduation Credit"]||"").toLowerCase().includes(v)))
+        tags.push(`<span class="tag core">Core Grad Credit</span>`);
+      (c["Pathways"]||"").split(",").forEach(p => { if(p.trim()) tags.push(`<span class="tag path">${esc(p.trim())}</span>`); });
+      (c["Programs"]||"").split(",").forEach(p => { if(p.trim()) tags.push(`<span class="tag prog">${esc(p.trim())}</span>`); });
+
+      return `<div class="card">
+        <div class="card-top">
+          ${c["Course Number"] ? `<span class="course-num">${esc(c["Course Number"])}</span>` : "<span></span>"}
+          ${c["CreditType"]    ? `<span class="credit-badge">${esc(c["CreditType"])}</span>` : ""}
+        </div>
+        <h2>${esc(c["Name"] || "Untitled Course")}</h2>
+        ${c["School Name"] ? `<div class="school-name">${esc(c["School Name"])}</div>` : ""}
+        ${c["Course Description"] ? `<div class="description">${esc(c["Course Description"])}</div>` : ""}
+        ${tags.length ? `<div class="tags">${tags.join("")}</div>` : ""}
+      </div>`;
+    }).join("");
+  }
+
+  function esc(s) {
+    return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
+  }
+
+  loadData();
+</script>
+</body>
+</html>
