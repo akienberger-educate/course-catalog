@@ -457,7 +457,6 @@
           <div class="icon-strip">${icons.join("")}</div>
         </div>
         <h2>${esc(c["Course Name"] || "Untitled Course")}</h2>
-        ${c["School Name"] ? `<div class="school">${esc(c["School Name"])}</div>` : ""}
         ${c["Course Description"] ? `<div class="description">${esc(c["Course Description"])}</div>` : ""}
         ${meta.length ? `<div class="meta-row">${meta.join("")}</div>` : ""}
         ${prereqHTML}
