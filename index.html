@@ -17,131 +17,103 @@
     --border: #dde1ec;
     --text:   #1a2744;
     --muted:  #6b7494;
+    --green:  #2e7d32;
     --radius: 10px;
     --shadow: 0 2px 12px rgba(26,39,68,.08);
   }
 
-  body {
-    font-family: 'DM Sans', sans-serif;
-    background: var(--gray);
-    color: var(--text);
-    min-height: 100vh;
-  }
+  body { font-family: 'DM Sans', sans-serif; background: var(--gray); color: var(--text); min-height: 100vh; }
 
-  header {
-    background: var(--navy);
-    padding: 28px 32px 24px;
-  }
-  header h1 {
-    font-family: 'DM Serif Display', serif;
-    font-size: 1.9rem;
-    color: var(--white);
-    letter-spacing: -.3px;
-  }
-  header p { color: #a0aece; margin-top: 4px; font-size: .92rem; }
+  header { background: var(--navy); padding: 28px 32px 24px; }
+  header h1 { font-family: 'DM Serif Display', serif; font-size: 1.9rem; color: var(--white); letter-spacing: -.3px; }
+  header p  { color: #a0aece; margin-top: 4px; font-size: .92rem; }
 
   .page { max-width: 1200px; margin: 0 auto; padding: 24px 20px 48px; }
 
-  /* Loading & error */
-  .status {
-    text-align: center;
-    padding: 64px 20px;
-    color: var(--muted);
-    font-size: 1rem;
-  }
+  /* Loading */
+  .status { text-align: center; padding: 64px 20px; color: var(--muted); font-size: 1rem; }
   .status.error { color: #c0392b; }
-  .spinner {
-    width: 36px; height: 36px;
-    border: 3px solid var(--border);
-    border-top-color: var(--blue);
-    border-radius: 50%;
-    animation: spin .7s linear infinite;
-    margin: 0 auto 16px;
-  }
+  .spinner { width: 36px; height: 36px; border: 3px solid var(--border); border-top-color: var(--blue); border-radius: 50%; animation: spin .7s linear infinite; margin: 0 auto 16px; }
   @keyframes spin { to { transform: rotate(360deg); } }
 
   /* Search */
   .search-wrap { position: relative; margin-bottom: 18px; }
-  .search-wrap svg {
-    position: absolute; left: 14px; top: 50%;
-    transform: translateY(-50%);
-    color: var(--muted); pointer-events: none;
-  }
-  #search {
-    width: 100%; padding: 12px 14px 12px 42px;
-    border: 1.5px solid var(--border); border-radius: var(--radius);
-    font-family: inherit; font-size: .95rem;
-    background: var(--white); color: var(--text);
-    transition: border-color .15s;
-  }
+  .search-wrap svg { position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: var(--muted); pointer-events: none; }
+  #search { width: 100%; padding: 12px 14px 12px 42px; border: 1.5px solid var(--border); border-radius: var(--radius); font-family: inherit; font-size: .95rem; background: var(--white); color: var(--text); transition: border-color .15s; }
   #search:focus { outline: none; border-color: var(--blue); }
 
   /* Filters */
   .filters { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 22px; align-items: center; }
   .filters select {
-    padding: 9px 32px 9px 12px;
-    border: 1.5px solid var(--border); border-radius: var(--radius);
-    font-family: inherit; font-size: .88rem;
-    background: var(--white); color: var(--text);
+    padding: 9px 32px 9px 12px; border: 1.5px solid var(--border); border-radius: var(--radius);
+    font-family: inherit; font-size: .88rem; background: var(--white); color: var(--text);
     appearance: none;
     background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%236b7494' stroke-width='2.5'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
     background-repeat: no-repeat; background-position: right 10px center;
     cursor: pointer; transition: border-color .15s; min-width: 150px;
   }
   .filters select:focus { outline: none; border-color: var(--blue); }
-  #clearBtn {
-    margin-left: auto; padding: 9px 16px;
-    border: 1.5px solid var(--border); border-radius: var(--radius);
-    font-family: inherit; font-size: .88rem;
-    background: var(--white); color: var(--muted);
-    cursor: pointer; transition: all .15s;
-  }
+  #clearBtn { margin-left: auto; padding: 9px 16px; border: 1.5px solid var(--border); border-radius: var(--radius); font-family: inherit; font-size: .88rem; background: var(--white); color: var(--muted); cursor: pointer; transition: all .15s; }
   #clearBtn:hover { border-color: var(--blue); color: var(--blue); }
 
   .results-bar { font-size: .88rem; color: var(--muted); margin-bottom: 16px; }
   .results-bar strong { color: var(--text); }
 
-  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 16px; }
+  /* Grid */
+  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(330px, 1fr)); gap: 16px; }
 
+  /* Card */
   .card {
     background: var(--white); border: 1.5px solid var(--border);
     border-radius: var(--radius); padding: 20px;
     box-shadow: var(--shadow); transition: box-shadow .2s, border-color .2s, transform .15s;
+    display: flex; flex-direction: column; gap: 10px;
   }
-  .card:hover {
-    box-shadow: 0 6px 24px rgba(47,91,234,.12);
-    border-color: #c2ccf5; transform: translateY(-2px);
-  }
-  .card-top { display: flex; justify-content: space-between; align-items: flex-start; gap: 8px; margin-bottom: 10px; }
-  .course-num {
-    font-size: .78rem; font-weight: 600; color: var(--blue);
-    background: var(--sky); padding: 3px 9px; border-radius: 20px; white-space: nowrap;
-  }
-  .credit-badge {
-    font-size: .76rem; font-weight: 500; color: var(--muted);
-    background: var(--gray); padding: 3px 9px; border-radius: 20px; white-space: nowrap;
-  }
-  .card h2 {
-    font-family: 'DM Serif Display', serif; font-size: 1.05rem;
-    line-height: 1.35; margin-bottom: 6px; color: var(--navy);
-  }
-  .school-name { font-size: .82rem; color: var(--muted); margin-bottom: 10px; }
-  .description {
-    font-size: .88rem; line-height: 1.6; color: #444c6a;
-    display: -webkit-box; -webkit-line-clamp: 3;
-    -webkit-box-orient: vertical; overflow: hidden; margin-bottom: 14px;
-  }
-  .tags { display: flex; flex-wrap: wrap; gap: 6px; }
-  .tag {
-    font-size: .74rem; font-weight: 500; padding: 3px 9px;
-    border-radius: 20px; border: 1px solid var(--border);
-    color: var(--muted); background: var(--white);
-  }
-  .tag.grade  { border-color: #c8e6c9; color: #2e7d32; background: #f1f8f1; }
-  .tag.core   { border-color: #ffe0b2; color: #e65100; background: #fff8f3; }
-  .tag.path   { border-color: #e1bee7; color: #6a1b9a; background: #faf4fc; }
-  .tag.prog   { border-color: #b3e5fc; color: #01579b; background: #f0faff; }
+  .card:hover { box-shadow: 0 6px 24px rgba(47,91,234,.12); border-color: #c2ccf5; transform: translateY(-2px); }
 
+  /* Card top row: course number + icon strip */
+  .card-top { display: flex; justify-content: space-between; align-items: center; }
+  .course-num { font-size: .78rem; font-weight: 600; color: var(--blue); background: var(--sky); padding: 3px 10px; border-radius: 20px; }
+
+  /* Icon strip — online & core grad icons */
+  .icon-strip { display: flex; gap: 6px; align-items: center; }
+
+  .icon-pill {
+    display: flex; align-items: center; gap: 4px;
+    font-size: .72rem; font-weight: 600; padding: 3px 8px;
+    border-radius: 20px; white-space: nowrap;
+  }
+  .icon-pill.online { background: #e3f2fd; color: #0277bd; border: 1px solid #90caf9; }
+  .icon-pill.core   { background: #fff8e1; color: #f57f17; border: 1px solid #ffe082; }
+
+  /* Course name */
+  .card h2 { font-family: 'DM Serif Display', serif; font-size: 1.08rem; line-height: 1.35; color: var(--navy); }
+
+  /* School */
+  .school { font-size: .82rem; color: var(--muted); }
+
+  /* Description */
+  .description {
+    font-size: .87rem; line-height: 1.6; color: #444c6a;
+    display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden;
+  }
+
+  /* Meta row: length + program */
+  .meta-row { display: flex; flex-wrap: wrap; gap: 10px; }
+  .meta-item { display: flex; align-items: center; gap: 5px; font-size: .82rem; color: var(--muted); }
+  .meta-item svg { flex-shrink: 0; opacity: .7; }
+
+  /* Prereq badge */
+  .prereq-badge {
+    display: inline-flex; align-items: center; gap: 5px;
+    font-size: .8rem; font-weight: 500; padding: 5px 11px;
+    border-radius: 8px; width: fit-content;
+  }
+  .prereq-badge.course-req  { background: #fff3e0; color: #e65100; border: 1px solid #ffcc80; }
+  .prereq-badge.program-req { background: #ede7f6; color: #4527a0; border: 1px solid #ce93d8; }
+  .prereq-badge.no-req      { background: #e8f5e9; color: #2e7d32; border: 1px solid #a5d6a7; }
+
+  /* Empty */
   .empty { text-align: center; padding: 64px 20px; color: var(--muted); grid-column: 1/-1; }
   .empty svg { opacity: .3; margin-bottom: 16px; }
 
@@ -165,13 +137,11 @@
 
 <div class="page">
 
-  <!-- Loading state -->
   <div class="status" id="status">
     <div class="spinner"></div>
     <p>Loading courses…</p>
   </div>
 
-  <!-- Controls (hidden until data loads) -->
   <div class="controls" id="controls">
     <div class="search-wrap">
       <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
@@ -181,15 +151,33 @@
     </div>
 
     <div class="filters">
-      <select id="filterSchool"><option value="">All Schools</option></select>
       <select id="filterGrade"><option value="">All Grades</option></select>
-      <select id="filterCredit"><option value="">All Credit Types</option></select>
-      <select id="filterPathway"><option value="">All Pathways</option></select>
+      <select id="filterOnline">
+        <option value="">Online or In-Person</option>
+        <option value="yes">Online Only</option>
+        <option value="no">In-Person Only</option>
+      </select>
+      <select id="filterSchool"><option value="">All Schools</option></select>
       <select id="filterProgram"><option value="">All Programs</option></select>
-      <select id="filterCore">
-        <option value="">Core Grad Credit?</option>
-        <option value="yes">Yes</option>
-        <option value="no">No</option>
+      <select id="filterPrereq">
+        <option value="">All Prerequisites</option>
+        <option value="course">Has Course Pre-req</option>
+        <option value="program">Has Program Pre-req</option>
+        <option value="none">No Pre-req</option>
+      </select>
+      <select id="filterLength"><option value="">All Lengths</option></select>
+      <select id="filterPathway"><option value="">All Pathways</option></select>
+      <select id="filterGradCredit">
+        <option value="">All Grad Credits</option>
+        <option value="English">English</option>
+        <option value="Math">Math</option>
+        <option value="Science">Science</option>
+        <option value="Social Studies">Social Studies</option>
+        <option value="PE 9">PE 9</option>
+        <option value="PE 10">PE 10</option>
+        <option value="Health">Health</option>
+        <option value="Personal Finance">Personal Finance</option>
+        <option value="Fine Arts">Fine Arts</option>
       </select>
       <button id="clearBtn">✕ Clear filters</button>
     </div>
@@ -202,56 +190,43 @@
 
 <script>
   // ============================================================
-  //  CONFIG — update these two values if your sheet ever changes
-  // ============================================================
   const SHEET_ID  = "1oDqMjM300awYb06w5xyPnwaNnGgNcI8O0cQL57Y5VfQ";
-  const SHEET_TAB = "Round1Data"; // ← update this to match your tab name
+  const SHEET_TAB = "Round1Data"; // ← update if your tab name differs
   // ============================================================
 
   const CSV_URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(SHEET_TAB)}`;
 
   let ALL_COURSES = [];
 
-  // ── Fetch & parse CSV ────────────────────────────────────
+  // ── Fetch CSV ───────────────────────────────────────────
   async function loadData() {
     try {
       const res = await fetch(CSV_URL);
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
-      const text = await res.text();
-      ALL_COURSES = parseCSV(text);
+      ALL_COURSES = parseCSV(await res.text());
       init();
     } catch (err) {
       document.getElementById("status").innerHTML =
-        `<p class="error">⚠️ Could not load course data.<br><small>${err.message}</small><br><br>Make sure the Google Sheet is set to <strong>"Anyone with the link can view"</strong>.</p>`;
+        `<p>⚠️ Could not load data.<br><small>${err.message}</small><br><br>Make sure the Google Sheet is set to <strong>"Anyone with the link can view"</strong>.</p>`;
       document.getElementById("status").classList.add("error");
     }
   }
 
-  // Simple CSV parser that handles quoted fields
+  // ── CSV parser ──────────────────────────────────────────
   function parseCSV(text) {
-    const lines = [];
     let cur = "", inQ = false;
-    const rows = [];
-    let cells = [];
-
+    const rows = []; let cells = [];
     for (let i = 0; i < text.length; i++) {
       const ch = text[i];
-      if (ch === '"') {
-        if (inQ && text[i+1] === '"') { cur += '"'; i++; }
-        else inQ = !inQ;
-      } else if (ch === ',' && !inQ) {
-        cells.push(cur); cur = "";
-      } else if ((ch === '\n' || ch === '\r') && !inQ) {
+      if (ch === '"') { if (inQ && text[i+1] === '"') { cur += '"'; i++; } else inQ = !inQ; }
+      else if (ch === ',' && !inQ) { cells.push(cur); cur = ""; }
+      else if ((ch === '\n' || ch === '\r') && !inQ) {
         cells.push(cur); cur = "";
         if (cells.some(c => c !== "")) rows.push(cells);
-        cells = [];
-        if (ch === '\r' && text[i+1] === '\n') i++;
-      } else {
-        cur += ch;
-      }
+        cells = []; if (ch === '\r' && text[i+1] === '\n') i++;
+      } else cur += ch;
     }
     if (cur || cells.length) { cells.push(cur); rows.push(cells); }
-
     if (rows.length < 2) return [];
     const headers = rows[0].map(h => h.trim());
     return rows.slice(1).map(row => {
@@ -261,30 +236,25 @@
     });
   }
 
-  // ── Init after data loads ────────────────────────────────
+  // ── Init ────────────────────────────────────────────────
   function init() {
     document.getElementById("status").style.display = "none";
     document.getElementById("controls").classList.add("visible");
 
-    populateSelect("filterSchool",  "School Name");
     populateSelect("filterGrade",   "Grade");
-    populateSelect("filterCredit",  "CreditType");
-    populateSelect("filterPathway", "Pathways");
+    populateSelect("filterSchool",  "School Name");
     populateSelect("filterProgram", "Programs");
+    populateSelect("filterLength",  "Length of Course");
+    populateSelect("filterPathway", "Pathways");
 
-    [
-      document.getElementById("search"),
-      document.getElementById("filterSchool"),
-      document.getElementById("filterGrade"),
-      document.getElementById("filterCredit"),
-      document.getElementById("filterPathway"),
-      document.getElementById("filterProgram"),
-      document.getElementById("filterCore"),
-    ].forEach(el => el.addEventListener("input", render));
+    ["search","filterGrade","filterOnline","filterSchool","filterProgram",
+     "filterPrereq","filterLength","filterPathway","filterGradCredit"]
+      .forEach(id => document.getElementById(id).addEventListener("input", render));
 
     document.getElementById("clearBtn").addEventListener("click", () => {
       document.getElementById("search").value = "";
-      ["filterSchool","filterGrade","filterCredit","filterPathway","filterProgram","filterCore"]
+      ["filterGrade","filterOnline","filterSchool","filterProgram",
+       "filterPrereq","filterLength","filterPathway","filterGradCredit"]
         .forEach(id => document.getElementById(id).value = "");
       render();
     });
@@ -300,39 +270,56 @@
     });
     [...vals].sort().forEach(v => {
       const opt = document.createElement("option");
-      opt.value = v; opt.textContent = v;
-      sel.appendChild(opt);
+      opt.value = v; opt.textContent = v; sel.appendChild(opt);
     });
   }
 
-  // ── Render cards ─────────────────────────────────────────
+  // ── Prereq helper ───────────────────────────────────────
+  // Returns: "course" | "program" | "none" | ""
+  function prereqType(val) {
+    const v = (val || "").toLowerCase();
+    if (v.includes("course")) return "course";
+    if (v.includes("program")) return "program";
+    if (v.includes("no")) return "none";
+    return "";
+  }
+
+  function isYes(val) {
+    return ["yes","true","1","x","y"].some(v => (val||"").toLowerCase().includes(v));
+  }
+
   function matches(course, filterVal, field) {
     if (!filterVal) return true;
     return (course[field] || "").split(",").some(v => v.trim().toLowerCase() === filterVal.toLowerCase());
   }
 
+  // ── Render ──────────────────────────────────────────────
   function render() {
-    const q      = document.getElementById("search").value.trim().toLowerCase();
-    const school = document.getElementById("filterSchool").value;
-    const grade  = document.getElementById("filterGrade").value;
-    const credit = document.getElementById("filterCredit").value;
-    const path   = document.getElementById("filterPathway").value;
-    const prog   = document.getElementById("filterProgram").value;
-    const core   = document.getElementById("filterCore").value;
+    const q          = document.getElementById("search").value.trim().toLowerCase();
+    const grade      = document.getElementById("filterGrade").value;
+    const online     = document.getElementById("filterOnline").value;
+    const school     = document.getElementById("filterSchool").value;
+    const prog       = document.getElementById("filterProgram").value;
+    const prereq     = document.getElementById("filterPrereq").value;
+    const length     = document.getElementById("filterLength").value;
+    const path       = document.getElementById("filterPathway").value;
+    const gradCredit = document.getElementById("filterGradCredit").value;
 
     const filtered = ALL_COURSES.filter(c => {
-      if (q && !([c["Name"],c["Course Number"],c["Course Description"]].some(f => (f||"").toLowerCase().includes(q)))) return false;
-      if (!matches(c, school, "School Name")) return false;
+      if (q && !([c["Course Name"], c["Course Number"], c["Course Description"]]
+          .some(f => (f||"").toLowerCase().includes(q)))) return false;
       if (!matches(c, grade,  "Grade"))       return false;
-      if (!matches(c, credit, "CreditType"))  return false;
-      if (!matches(c, path,   "Pathways"))    return false;
-      if (!matches(c, prog,   "Programs"))    return false;
-      if (core) {
-        const val = (c["Core Graduation Credit"] || "").toLowerCase();
-        const isYes = ["yes","true","1","x"].some(v => val.includes(v));
-        if (core === "yes" && !isYes) return false;
-        if (core === "no"  &&  isYes) return false;
+      if (online) {
+        const isOnline = isYes(c["Online Course"]);
+        if (online === "yes" && !isOnline) return false;
+        if (online === "no"  &&  isOnline) return false;
       }
+      if (!matches(c, school, "School Name")) return false;
+      if (!matches(c, prog,   "Programs"))    return false;
+      if (prereq && prereqType(c["Prerequisite"]) !== prereq) return false;
+      if (!matches(c, length, "Length of Course")) return false;
+      if (!matches(c, path,   "Pathways"))    return false;
+      if (gradCredit && (c["Core Graduation Credit"]||"").toLowerCase() !== gradCredit.toLowerCase()) return false;
       return true;
     });
 
@@ -350,22 +337,54 @@
     }
 
     grid.innerHTML = filtered.map(c => {
-      const tags = [];
-      if (c["Grade"]) tags.push(`<span class="tag grade">Grade ${esc(c["Grade"])}</span>`);
-      if (["yes","true","1","x"].some(v => (c["Core Graduation Credit"]||"").toLowerCase().includes(v)))
-        tags.push(`<span class="tag core">Core Grad Credit</span>`);
-      (c["Pathways"]||"").split(",").forEach(p => { if(p.trim()) tags.push(`<span class="tag path">${esc(p.trim())}</span>`); });
-      (c["Programs"]||"").split(",").forEach(p => { if(p.trim()) tags.push(`<span class="tag prog">${esc(p.trim())}</span>`); });
+      // ── Icon strip ──
+      const icons = [];
+      if (isYes(c["Online Course"]))
+        icons.push(`<span class="icon-pill online">
+          <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+          Online</span>`);
+      if (c["Core Graduation Credit"] && c["Core Graduation Credit"].trim() !== "")
+        icons.push(`<span class="icon-pill core" title="Core Graduation Credit: ${esc(c["Core Graduation Credit"])}">
+          <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>
+          Core Credit</span>`);
+
+      // ── Prereq badge ──
+      const pt = prereqType(c["Prerequisite"]);
+      let prereqHTML = "";
+      if (pt === "course")
+        prereqHTML = `<div class="prereq-badge course-req">
+          <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+          Course Pre-req Required</div>`;
+      else if (pt === "program")
+        prereqHTML = `<div class="prereq-badge program-req">
+          <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+          Program Pre-req Required</div>`;
+      else
+        prereqHTML = `<div class="prereq-badge no-req">
+          <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+          No Pre-req</div>`;
+
+      // ── Meta row ──
+      const meta = [];
+      if (c["Length of Course"])
+        meta.push(`<span class="meta-item">
+          <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+          ${esc(c["Length of Course"])}</span>`);
+      if (c["Programs"])
+        meta.push(`<span class="meta-item">
+          <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
+          ${esc(c["Programs"])}</span>`);
 
       return `<div class="card">
         <div class="card-top">
           ${c["Course Number"] ? `<span class="course-num">${esc(c["Course Number"])}</span>` : "<span></span>"}
-          ${c["CreditType"]    ? `<span class="credit-badge">${esc(c["CreditType"])}</span>` : ""}
+          <div class="icon-strip">${icons.join("")}</div>
         </div>
-        <h2>${esc(c["Name"] || "Untitled Course")}</h2>
-        ${c["School Name"] ? `<div class="school-name">${esc(c["School Name"])}</div>` : ""}
+        <h2>${esc(c["Course Name"] || "Untitled Course")}</h2>
+        ${c["School Name"] ? `<div class="school">${esc(c["School Name"])}</div>` : ""}
         ${c["Course Description"] ? `<div class="description">${esc(c["Course Description"])}</div>` : ""}
-        ${tags.length ? `<div class="tags">${tags.join("")}</div>` : ""}
+        ${meta.length ? `<div class="meta-row">${meta.join("")}</div>` : ""}
+        ${prereqHTML}
       </div>`;
     }).join("");
   }
