@@ -17,50 +17,113 @@
     --border: #dde1ec;
     --text:   #1a2744;
     --muted:  #6b7494;
-    --green:  #2e7d32;
     --radius: 10px;
     --shadow: 0 2px 12px rgba(26,39,68,.08);
   }
 
   body { font-family: 'DM Sans', sans-serif; background: var(--gray); color: var(--text); min-height: 100vh; }
 
-  header { background: var(--navy); padding: 28px 32px 24px; }
-  header h1 { font-family: 'DM Serif Display', serif; font-size: 1.9rem; color: var(--white); letter-spacing: -.3px; }
-  header p  { color: #a0aece; margin-top: 4px; font-size: .92rem; }
+  /* ── Header ── */
+  header { background: var(--navy); padding: 24px 32px; }
+  header h1 { font-family: 'DM Serif Display', serif; font-size: 1.8rem; color: var(--white); letter-spacing: -.3px; }
+  header p  { color: #a0aece; margin-top: 4px; font-size: .9rem; }
 
-  .page { max-width: 1200px; margin: 0 auto; padding: 24px 20px 48px; }
+  /* ── Layout ── */
+  .layout {
+    display: flex;
+    align-items: flex-start;
+    max-width: 1300px;
+    margin: 0 auto;
+    padding: 24px 20px 48px;
+    gap: 24px;
+  }
 
-  /* Loading */
-  .status { text-align: center; padding: 64px 20px; color: var(--muted); font-size: 1rem; }
-  .status.error { color: #c0392b; }
-  .spinner { width: 36px; height: 36px; border: 3px solid var(--border); border-top-color: var(--blue); border-radius: 50%; animation: spin .7s linear infinite; margin: 0 auto 16px; }
-  @keyframes spin { to { transform: rotate(360deg); } }
+  /* ── Sidebar ── */
+  .sidebar {
+    width: 240px;
+    flex-shrink: 0;
+    background: var(--white);
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    padding: 20px;
+    position: sticky;
+    top: 16px;
+  }
+
+  .sidebar-title {
+    font-size: .75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: .08em;
+    color: var(--muted);
+    margin-bottom: 16px;
+  }
+
+  .filter-group { margin-bottom: 18px; }
+  .filter-label {
+    display: block;
+    font-size: .78rem;
+    font-weight: 600;
+    color: var(--navy);
+    margin-bottom: 6px;
+  }
+
+  .sidebar select {
+    width: 100%;
+    padding: 8px 28px 8px 10px;
+    border: 1.5px solid var(--border);
+    border-radius: 8px;
+    font-family: inherit;
+    font-size: .85rem;
+    background: var(--white);
+    color: var(--text);
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='11' height='11' viewBox='0 0 24 24' fill='none' stroke='%236b7494' stroke-width='2.5'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 9px center;
+    cursor: pointer;
+    transition: border-color .15s;
+  }
+  .sidebar select:focus { outline: none; border-color: var(--blue); }
+
+  .sidebar-divider { border: none; border-top: 1px solid var(--border); margin: 18px 0; }
+
+  #clearBtn {
+    width: 100%;
+    padding: 9px;
+    border: 1.5px solid var(--border);
+    border-radius: 8px;
+    font-family: inherit;
+    font-size: .85rem;
+    background: var(--white);
+    color: var(--muted);
+    cursor: pointer;
+    transition: all .15s;
+    text-align: center;
+  }
+  #clearBtn:hover { border-color: var(--blue); color: var(--blue); background: var(--sky); }
+
+  /* ── Main content ── */
+  .main { flex: 1; min-width: 0; }
 
   /* Search */
-  .search-wrap { position: relative; margin-bottom: 18px; }
+  .search-wrap { position: relative; margin-bottom: 16px; }
   .search-wrap svg { position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: var(--muted); pointer-events: none; }
-  #search { width: 100%; padding: 12px 14px 12px 42px; border: 1.5px solid var(--border); border-radius: var(--radius); font-family: inherit; font-size: .95rem; background: var(--white); color: var(--text); transition: border-color .15s; }
+  #search {
+    width: 100%; padding: 11px 14px 11px 42px;
+    border: 1.5px solid var(--border); border-radius: var(--radius);
+    font-family: inherit; font-size: .95rem;
+    background: var(--white); color: var(--text);
+    transition: border-color .15s;
+  }
   #search:focus { outline: none; border-color: var(--blue); }
 
-  /* Filters */
-  .filters { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 22px; align-items: center; }
-  .filters select {
-    padding: 9px 32px 9px 12px; border: 1.5px solid var(--border); border-radius: var(--radius);
-    font-family: inherit; font-size: .88rem; background: var(--white); color: var(--text);
-    appearance: none;
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%236b7494' stroke-width='2.5'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
-    background-repeat: no-repeat; background-position: right 10px center;
-    cursor: pointer; transition: border-color .15s; min-width: 150px;
-  }
-  .filters select:focus { outline: none; border-color: var(--blue); }
-  #clearBtn { margin-left: auto; padding: 9px 16px; border: 1.5px solid var(--border); border-radius: var(--radius); font-family: inherit; font-size: .88rem; background: var(--white); color: var(--muted); cursor: pointer; transition: all .15s; }
-  #clearBtn:hover { border-color: var(--blue); color: var(--blue); }
-
-  .results-bar { font-size: .88rem; color: var(--muted); margin-bottom: 16px; }
+  .results-bar { font-size: .85rem; color: var(--muted); margin-bottom: 14px; }
   .results-bar strong { color: var(--text); }
 
   /* Grid */
-  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(330px, 1fr)); gap: 16px; }
+  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 16px; }
 
   /* Card */
   .card {
@@ -71,60 +134,45 @@
   }
   .card:hover { box-shadow: 0 6px 24px rgba(47,91,234,.12); border-color: #c2ccf5; transform: translateY(-2px); }
 
-  /* Card top row: course number + icon strip */
   .card-top { display: flex; justify-content: space-between; align-items: center; }
   .course-num { font-size: .78rem; font-weight: 600; color: var(--blue); background: var(--sky); padding: 3px 10px; border-radius: 20px; }
 
-  /* Icon strip — online & core grad icons */
   .icon-strip { display: flex; gap: 6px; align-items: center; }
-
-  .icon-pill {
-    display: flex; align-items: center; gap: 4px;
-    font-size: .72rem; font-weight: 600; padding: 3px 8px;
-    border-radius: 20px; white-space: nowrap;
-  }
+  .icon-pill { display: flex; align-items: center; gap: 4px; font-size: .72rem; font-weight: 600; padding: 3px 8px; border-radius: 20px; white-space: nowrap; }
   .icon-pill.online { background: #e3f2fd; color: #0277bd; border: 1px solid #90caf9; }
   .icon-pill.core   { background: #fff8e1; color: #f57f17; border: 1px solid #ffe082; }
 
-  /* Course name */
-  .card h2 { font-family: 'DM Serif Display', serif; font-size: 1.08rem; line-height: 1.35; color: var(--navy); }
+  .card h2 { font-family: 'DM Serif Display', serif; font-size: 1.05rem; line-height: 1.35; color: var(--navy); }
+  .school  { font-size: .82rem; color: var(--muted); }
 
-  /* School */
-  .school { font-size: .82rem; color: var(--muted); }
+  .description { font-size: .87rem; line-height: 1.6; color: #444c6a; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
 
-  /* Description */
-  .description {
-    font-size: .87rem; line-height: 1.6; color: #444c6a;
-    display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden;
-  }
-
-  /* Meta row: length + program */
   .meta-row { display: flex; flex-wrap: wrap; gap: 10px; }
   .meta-item { display: flex; align-items: center; gap: 5px; font-size: .82rem; color: var(--muted); }
   .meta-item svg { flex-shrink: 0; opacity: .7; }
 
-  /* Prereq badge */
-  .prereq-badge {
-    display: inline-flex; align-items: center; gap: 5px;
-    font-size: .8rem; font-weight: 500; padding: 5px 11px;
-    border-radius: 8px; width: fit-content;
-  }
+  .prereq-badge { display: inline-flex; align-items: center; gap: 5px; font-size: .8rem; font-weight: 500; padding: 5px 11px; border-radius: 8px; width: fit-content; }
   .prereq-badge.course-req  { background: #fff3e0; color: #e65100; border: 1px solid #ffcc80; }
   .prereq-badge.program-req { background: #ede7f6; color: #4527a0; border: 1px solid #ce93d8; }
   .prereq-badge.no-req      { background: #e8f5e9; color: #2e7d32; border: 1px solid #a5d6a7; }
 
-  /* Empty */
+  /* Loading */
+  .status { text-align: center; padding: 64px 20px; color: var(--muted); font-size: 1rem; width: 100%; }
+  .status.error { color: #c0392b; }
+  .spinner { width: 36px; height: 36px; border: 3px solid var(--border); border-top-color: var(--blue); border-radius: 50%; animation: spin .7s linear infinite; margin: 0 auto 16px; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
   .empty { text-align: center; padding: 64px 20px; color: var(--muted); grid-column: 1/-1; }
   .empty svg { opacity: .3; margin-bottom: 16px; }
 
-  .controls { display: none; }
-  .controls.visible { display: block; }
+  .sidebar { display: none; }
+  .sidebar.visible { display: block; }
 
-  @media (max-width: 600px) {
-    header { padding: 20px 16px; }
-    .page  { padding: 16px 12px 40px; }
-    .grid  { grid-template-columns: 1fr; }
-    #clearBtn { margin-left: 0; }
+  /* ── Mobile: sidebar stacks on top ── */
+  @media (max-width: 700px) {
+    .layout { flex-direction: column; padding: 16px 12px 40px; }
+    .sidebar { width: 100%; position: static; }
+    .grid { grid-template-columns: 1fr; }
   }
 </style>
 </head>
@@ -135,40 +183,60 @@
   <p>Browse and filter available courses</p>
 </header>
 
-<div class="page">
+<div class="layout">
 
-  <div class="status" id="status">
-    <div class="spinner"></div>
-    <p>Loading courses…</p>
-  </div>
+  <!-- Sidebar filters -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-title">Filter Courses</div>
 
-  <div class="controls" id="controls">
-    <div class="search-wrap">
-      <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-        <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
-      </svg>
-      <input id="search" type="search" placeholder="Search by course name or number…" />
+    <div class="filter-group">
+      <label class="filter-label">Grade</label>
+      <select id="filterGrade"><option value="">All Grades</option></select>
     </div>
 
-    <div class="filters">
-      <select id="filterGrade"><option value="">All Grades</option></select>
+    <div class="filter-group">
+      <label class="filter-label">Delivery</label>
       <select id="filterOnline">
         <option value="">Online or In-Person</option>
         <option value="yes">Online Only</option>
         <option value="no">In-Person Only</option>
       </select>
+    </div>
+
+    <div class="filter-group">
+      <label class="filter-label">School</label>
       <select id="filterSchool"><option value="">All Schools</option></select>
+    </div>
+
+    <div class="filter-group">
+      <label class="filter-label">Program</label>
       <select id="filterProgram"><option value="">All Programs</option></select>
+    </div>
+
+    <div class="filter-group">
+      <label class="filter-label">Prerequisite</label>
       <select id="filterPrereq">
-        <option value="">All Prerequisites</option>
+        <option value="">All</option>
         <option value="course">Has Course Pre-req</option>
         <option value="program">Has Program Pre-req</option>
         <option value="none">No Pre-req</option>
       </select>
+    </div>
+
+    <div class="filter-group">
+      <label class="filter-label">Length of Course</label>
       <select id="filterLength"><option value="">All Lengths</option></select>
+    </div>
+
+    <div class="filter-group">
+      <label class="filter-label">Pathway</label>
       <select id="filterPathway"><option value="">All Pathways</option></select>
+    </div>
+
+    <div class="filter-group">
+      <label class="filter-label">Core Grad Credit</label>
       <select id="filterGradCredit">
-        <option value="">All Grad Credits</option>
+        <option value="">All</option>
         <option value="English">English</option>
         <option value="Math">Math</option>
         <option value="Science">Science</option>
@@ -179,26 +247,41 @@
         <option value="Personal Finance">Personal Finance</option>
         <option value="Fine Arts">Fine Arts</option>
       </select>
-      <button id="clearBtn">✕ Clear filters</button>
     </div>
 
-    <div class="results-bar"><strong id="countLabel">0</strong> courses found</div>
-  </div>
+    <hr class="sidebar-divider" />
+    <button id="clearBtn">✕ Clear All Filters</button>
+  </aside>
 
-  <div class="grid" id="grid"></div>
+  <!-- Main content -->
+  <div class="main">
+
+    <div class="status" id="status">
+      <div class="spinner"></div>
+      <p>Loading courses…</p>
+    </div>
+
+    <div id="mainContent" style="display:none">
+      <div class="search-wrap">
+        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+        </svg>
+        <input id="search" type="search" placeholder="Search by course name or number…" />
+      </div>
+      <div class="results-bar"><strong id="countLabel">0</strong> courses found</div>
+      <div class="grid" id="grid"></div>
+    </div>
+
+  </div>
 </div>
 
 <script>
-  // ============================================================
   const SHEET_ID  = "1oDqMjM300awYb06w5xyPnwaNnGgNcI8O0cQL57Y5VfQ";
-  const SHEET_TAB = "Round1Data"; // ← update if your tab name differs
-  // ============================================================
+  const SHEET_TAB = "Round1Data";
 
   const CSV_URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(SHEET_TAB)}`;
-
   let ALL_COURSES = [];
 
-  // ── Fetch CSV ───────────────────────────────────────────
   async function loadData() {
     try {
       const res = await fetch(CSV_URL);
@@ -212,7 +295,6 @@
     }
   }
 
-  // ── CSV parser ──────────────────────────────────────────
   function parseCSV(text) {
     let cur = "", inQ = false;
     const rows = []; let cells = [];
@@ -236,10 +318,10 @@
     });
   }
 
-  // ── Init ────────────────────────────────────────────────
   function init() {
     document.getElementById("status").style.display = "none";
-    document.getElementById("controls").classList.add("visible");
+    document.getElementById("mainContent").style.display = "block";
+    document.getElementById("sidebar").classList.add("visible");
 
     populateSelect("filterGrade",   "Grade");
     populateSelect("filterSchool",  "School Name");
@@ -274,13 +356,11 @@
     });
   }
 
-  // ── Prereq helper ───────────────────────────────────────
-  // Returns: "course" | "program" | "none" | ""
   function prereqType(val) {
     const v = (val || "").toLowerCase();
-    if (v.includes("course")) return "course";
-    if (v.includes("program")) return "program";
-    if (v.includes("no")) return "none";
+    if (v.includes("course"))   return "course";
+    if (v.includes("program"))  return "program";
+    if (v.includes("no"))       return "none";
     return "";
   }
 
@@ -293,7 +373,6 @@
     return (course[field] || "").split(",").some(v => v.trim().toLowerCase() === filterVal.toLowerCase());
   }
 
-  // ── Render ──────────────────────────────────────────────
   function render() {
     const q          = document.getElementById("search").value.trim().toLowerCase();
     const grade      = document.getElementById("filterGrade").value;
@@ -337,7 +416,6 @@
     }
 
     grid.innerHTML = filtered.map(c => {
-      // ── Icon strip ──
       const icons = [];
       if (isYes(c["Online Course"]))
         icons.push(`<span class="icon-pill online">
@@ -348,7 +426,6 @@
           <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>
           Core Credit</span>`);
 
-      // ── Prereq badge ──
       const pt = prereqType(c["Prerequisite"]);
       let prereqHTML = "";
       if (pt === "course")
@@ -364,7 +441,6 @@
           <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
           No Pre-req</div>`;
 
-      // ── Meta row ──
       const meta = [];
       if (c["Length of Course"])
         meta.push(`<span class="meta-item">
