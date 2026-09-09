@@ -172,7 +172,8 @@
   .modal-detail-item .value { font-size: .9rem; color: var(--text); }
   @media (max-width: 600px) { .modal-detail-grid { grid-template-columns: 1fr; } }
 
-  .course-num { display: block; margin-top: 3px; font-size: .78rem; font-weight: 500; color: var(--muted); letter-spacing: .02em; }
+  .subtitle-row { display: flex; align-items: center; flex-wrap: wrap; gap: 6px; margin-top: 3px; font-size: .78rem; font-weight: 500; color: var(--muted); letter-spacing: .02em; }
+  .subtitle-row .sep { color: var(--border); font-weight: 400; }
 
   .tag-row { display: flex; flex-wrap: wrap; gap: 8px; }
   .tag-pill { display: inline-flex; align-items: center; gap: 5px; font-size: .8rem; font-weight: 600; padding: 5px 11px; border-radius: 8px; white-space: nowrap; }
@@ -494,7 +495,11 @@
       return `<div class="card" data-idx="${i}" tabindex="0" role="button" aria-label="View details for ${esc(c["Course Name"] || "course")}">
         <div>
           <h2>${esc(c["Course Name"] || "Untitled Course")}</h2>
-          ${c["Course Number"] ? `<span class="course-num">${esc(c["Course Number"])}</span>` : ""}
+          <div class="subtitle-row">
+            ${c["Course Number"] ? `<span>${esc(c["Course Number"])}</span>` : ""}
+            ${c["Course Number"] && c["Length of Course"] ? `<span class="sep">•</span>` : ""}
+            ${c["Length of Course"] ? `<span>${esc(c["Length of Course"])}</span>` : ""}
+          </div>
         </div>
         ${c["Course Description"] ? `<div class="description">${esc(c["Course Description"])}</div>` : ""}
         <div class="tag-row">${tags.join("")}</div>
@@ -512,10 +517,6 @@
       tags.push(`<span class="tag-pill core">
         <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>
         Core Credit: ${esc(c["Core Graduation Credit"])}</span>`);
-    if (c["Pathways"] && c["Pathways"].trim() !== "")
-      tags.push(`<span class="tag-pill pathway">
-        <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg>
-        ${esc(c["Pathways"])}</span>`);
     if (c["Programs"] && c["Programs"].trim() !== "")
       tags.push(`<span class="tag-pill program">
         <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
