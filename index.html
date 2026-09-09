@@ -136,16 +136,53 @@
     display: flex; flex-direction: column; gap: 10px;
   }
   .card:hover { box-shadow: 0 6px 24px rgba(47,91,234,.12); border-color: #c2ccf5; transform: translateY(-2px); }
+  .card { cursor: pointer; }
+  .card:focus-visible { outline: 2.5px solid var(--blue); outline-offset: 2px; }
 
-  .card-top { display: flex; justify-content: space-between; align-items: center; }
-  .course-num { font-size: .78rem; font-weight: 600; color: var(--blue); background: var(--sky); padding: 3px 10px; border-radius: 20px; }
+  /* ── Modal ── */
+  .modal-overlay {
+    display: none; position: fixed; inset: 0; z-index: 100;
+    background: rgba(26,39,68,.55);
+    align-items: flex-start; justify-content: center;
+    padding: 40px 20px; overflow-y: auto;
+  }
+  .modal-overlay.open { display: flex; }
+  .modal-box {
+    position: relative; background: var(--white); border-radius: 14px;
+    max-width: 640px; width: 100%; padding: 32px;
+    box-shadow: 0 20px 60px rgba(26,39,68,.3);
+    animation: modalIn .18s ease-out;
+  }
+  @keyframes modalIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+  .modal-close {
+    position: absolute; top: 16px; right: 16px;
+    width: 32px; height: 32px; border-radius: 50%; border: none;
+    background: var(--gray); color: var(--muted);
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer; transition: background .15s, color .15s;
+  }
+  .modal-close:hover { background: var(--sky); color: var(--blue); }
+  .modal-num { font-size: .85rem; color: var(--muted); margin-top: 4px; margin-bottom: 4px; }
+  .modal-schools { font-size: .88rem; color: var(--muted); margin-bottom: 16px; }
+  .modal-box h2 { font-family: var(--font-header); font-weight: 700; font-size: 1.6rem; color: var(--navy); padding-right: 30px; line-height: 1.3; }
+  .modal-box .description { -webkit-line-clamp: unset; overflow: visible; font-size: .95rem; line-height: 1.7; margin: 18px 0; }
+  .modal-box .tag-row { margin-bottom: 18px; }
+  .modal-detail-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px 20px; border-top: 1px solid var(--border); padding-top: 16px; }
+  .modal-detail-item .label { font-size: .72rem; font-weight: 600; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); margin-bottom: 3px; }
+  .modal-detail-item .value { font-size: .9rem; color: var(--text); }
+  @media (max-width: 600px) { .modal-detail-grid { grid-template-columns: 1fr; } }
 
-  .icon-strip { display: flex; gap: 6px; align-items: center; }
-  .icon-pill { display: flex; align-items: center; gap: 4px; font-size: .72rem; font-weight: 600; padding: 3px 8px; border-radius: 20px; white-space: nowrap; }
-  .icon-pill.online { background: #e3f2fd; color: #0277bd; border: 1px solid #90caf9; }
-  .icon-pill.core   { background: #fff8e1; color: #C24400; border: 1px solid #ffe082; }
+  .course-num { display: block; margin-top: 3px; font-size: .78rem; font-weight: 500; color: var(--muted); letter-spacing: .02em; }
 
-  .card h2 { font-family: var(--font-header); font-weight: 700; font-size: 1.05rem; line-height: 1.35; color: var(--navy); }
+  .tag-row { display: flex; flex-wrap: wrap; gap: 8px; }
+  .tag-pill { display: inline-flex; align-items: center; gap: 5px; font-size: .8rem; font-weight: 600; padding: 5px 11px; border-radius: 8px; white-space: nowrap; }
+  .tag-pill.online         { background: #e3f2fd; color: #0277bd; border: 1px solid #90caf9; }
+  .tag-pill.core           { background: #fff8e1; color: #C24400; border: 1px solid #ffe082; }
+  .tag-pill.prereq-course  { background: #fff3e0; color: #C24400; border: 1px solid #ffcc80; }
+  .tag-pill.prereq-program { background: #ede7f6; color: #4527a0; border: 1px solid #ce93d8; }
+  .tag-pill.prereq-none    { background: #e8f5e9; color: #2e7d32; border: 1px solid #a5d6a7; }
+
+  .card h2 { font-family: var(--font-header); font-weight: 700; font-size: 1.3rem; line-height: 1.3; color: var(--navy); }
   .school  { font-size: .82rem; color: var(--muted); }
 
   .description { font-size: .87rem; line-height: 1.6; color: #444c6a; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
@@ -154,11 +191,7 @@
   .meta-item { display: flex; align-items: center; gap: 5px; font-size: .82rem; color: var(--muted); }
   .meta-item svg { flex-shrink: 0; opacity: .7; }
 
-  .prereq-badge { display: inline-flex; align-items: center; gap: 5px; font-size: .8rem; font-weight: 500; padding: 5px 11px; border-radius: 8px; width: fit-content; }
-  .prereq-badge.course-req  { background: #fff3e0; color: #C24400; border: 1px solid #ffcc80; }
-  .prereq-badge.program-req { background: #ede7f6; color: #4527a0; border: 1px solid #ce93d8; }
-  .prereq-badge.no-req      { background: #e8f5e9; color: #2e7d32; border: 1px solid #a5d6a7; }
-
+  
   /* Loading */
   .status { text-align: center; padding: 64px 20px; color: var(--muted); font-size: 1rem; width: 100%; }
   .status.error { color: #c0392b; }
@@ -278,12 +311,23 @@
   </div>
 </div>
 
+<!-- Course detail modal -->
+<div class="modal-overlay" id="modalOverlay">
+  <div class="modal-box" id="modalBox" role="dialog" aria-modal="true">
+    <button class="modal-close" id="modalClose" aria-label="Close">
+      <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+    </button>
+    <div id="modalContent"></div>
+  </div>
+</div>
+
 <script>
   const SHEET_ID = "1oDqMjM300awYb06w5xyPnwaNnGgNcI8O0cQL57Y5VfQ";
   const SHEET_GID = "17307769";
 
   const CSV_URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&gid=${SHEET_GID}`;
   let ALL_COURSES = [];
+  let CURRENT_FILTERED = [];
 
   async function loadData() {
     try {
@@ -342,6 +386,29 @@
        "filterPrereq","filterLength","filterPathway","filterGradCredit"]
         .forEach(id => document.getElementById(id).value = "");
       render();
+    });
+
+    document.getElementById("grid").addEventListener("click", e => {
+      const card = e.target.closest(".card");
+      if (!card) return;
+      const course = CURRENT_FILTERED[Number(card.dataset.idx)];
+      if (course) openModal(course);
+    });
+    document.getElementById("grid").addEventListener("keydown", e => {
+      if (e.key !== "Enter" && e.key !== " ") return;
+      const card = e.target.closest(".card");
+      if (!card) return;
+      e.preventDefault();
+      const course = CURRENT_FILTERED[Number(card.dataset.idx)];
+      if (course) openModal(course);
+    });
+
+    document.getElementById("modalClose").addEventListener("click", closeModal);
+    document.getElementById("modalOverlay").addEventListener("click", e => {
+      if (e.target.id === "modalOverlay") closeModal();
+    });
+    document.addEventListener("keydown", e => {
+      if (e.key === "Escape") closeModal();
     });
 
     render();
@@ -407,6 +474,7 @@
 
     document.getElementById("countLabel").textContent = filtered.length;
     const grid = document.getElementById("grid");
+    CURRENT_FILTERED = filtered;
 
     if (filtered.length === 0) {
       grid.innerHTML = `<div class="empty">
@@ -418,53 +486,89 @@
       return;
     }
 
-    grid.innerHTML = filtered.map(c => {
-      const icons = [];
-      if (isYes(c["Online Course"]))
-        icons.push(`<span class="icon-pill online">
-          <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
-          Online</span>`);
-      if (c["Core Graduation Credit"] && c["Core Graduation Credit"].trim() !== "")
-        icons.push(`<span class="icon-pill core" title="Core Graduation Credit: ${esc(c["Core Graduation Credit"])}">
-          <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>
-          Core Credit</span>`);
+    grid.innerHTML = filtered.map((c, i) => {
+      const tags = buildTags(c);
+      const meta = buildMeta(c);
 
-      const pt = prereqType(c["Prerequisite"]);
-      let prereqHTML = "";
-      if (pt === "course")
-        prereqHTML = `<div class="prereq-badge course-req">
-          <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
-          Course Pre-req Required</div>`;
-      else if (pt === "program")
-        prereqHTML = `<div class="prereq-badge program-req">
-          <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
-          Program Pre-req Required</div>`;
-      else
-        prereqHTML = `<div class="prereq-badge no-req">
-          <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
-          No Pre-req</div>`;
-
-      const meta = [];
-      if (c["Length of Course"])
-        meta.push(`<span class="meta-item">
-          <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-          ${esc(c["Length of Course"])}</span>`);
-      if (c["Programs"])
-        meta.push(`<span class="meta-item">
-          <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
-          ${esc(c["Programs"])}</span>`);
-
-      return `<div class="card">
-        <div class="card-top">
-          ${c["Course Number"] ? `<span class="course-num">${esc(c["Course Number"])}</span>` : "<span></span>"}
-          <div class="icon-strip">${icons.join("")}</div>
+      return `<div class="card" data-idx="${i}" tabindex="0" role="button" aria-label="View details for ${esc(c["Course Name"] || "course")}">
+        <div>
+          <h2>${esc(c["Course Name"] || "Untitled Course")}</h2>
+          ${c["Course Number"] ? `<span class="course-num">${esc(c["Course Number"])}</span>` : ""}
         </div>
-        <h2>${esc(c["Course Name"] || "Untitled Course")}</h2>
         ${c["Course Description"] ? `<div class="description">${esc(c["Course Description"])}</div>` : ""}
+        <div class="tag-row">${tags.join("")}</div>
         ${meta.length ? `<div class="meta-row">${meta.join("")}</div>` : ""}
-        ${prereqHTML}
       </div>`;
     }).join("");
+  }
+
+  function buildTags(c) {
+    const tags = [];
+    if (isYes(c["Online Course"]))
+      tags.push(`<span class="tag-pill online">
+        <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+        Online</span>`);
+    if (c["Core Graduation Credit"] && c["Core Graduation Credit"].trim() !== "")
+      tags.push(`<span class="tag-pill core">
+        <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>
+        Core Credit: ${esc(c["Core Graduation Credit"])}</span>`);
+
+    const pt = prereqType(c["Prerequisite"]);
+    if (pt === "course")
+      tags.push(`<span class="tag-pill prereq-course">
+        <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+        Course Pre-req Required</span>`);
+    else if (pt === "program")
+      tags.push(`<span class="tag-pill prereq-program">
+        <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+        Program Pre-req Required</span>`);
+    else
+      tags.push(`<span class="tag-pill prereq-none">
+        <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+        No Pre-req</span>`);
+    return tags;
+  }
+
+  function buildMeta(c) {
+    const meta = [];
+    if (c["Length of Course"])
+      meta.push(`<span class="meta-item">
+        <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+        ${esc(c["Length of Course"])}</span>`);
+    if (c["Programs"])
+      meta.push(`<span class="meta-item">
+        <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
+        ${esc(c["Programs"])}</span>`);
+    return meta;
+  }
+
+  function openModal(c) {
+    const tags = buildTags(c);
+    const details = [
+      ["School",              c["School Name"]],
+      ["Grade",               c["Grade"]],
+      ["Length of Course",    c["Length of Course"]],
+      ["Credit Type",         c["CreditType"]],
+      ["Programs",            c["Programs"]],
+      ["Pathways",            c["Pathways"]],
+    ].filter(([, v]) => v && v.trim() !== "");
+
+    document.getElementById("modalContent").innerHTML = `
+      <h2>${esc(c["Course Name"] || "Untitled Course")}</h2>
+      ${c["Course Number"] ? `<div class="modal-num">${esc(c["Course Number"])}</div>` : ""}
+      <div class="tag-row">${tags.join("")}</div>
+      ${c["Course Description"] ? `<div class="description">${esc(c["Course Description"])}</div>` : ""}
+      ${details.length ? `<div class="modal-detail-grid">${details.map(([label, value]) =>
+        `<div class="modal-detail-item"><div class="label">${esc(label)}</div><div class="value">${esc(value)}</div></div>`
+      ).join("")}</div>` : ""}
+    `;
+    document.getElementById("modalOverlay").classList.add("open");
+    document.body.style.overflow = "hidden";
+  }
+
+  function closeModal() {
+    document.getElementById("modalOverlay").classList.remove("open");
+    document.body.style.overflow = "";
   }
 
   function esc(s) {
