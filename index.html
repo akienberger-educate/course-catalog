@@ -178,6 +178,8 @@
   .tag-pill { display: inline-flex; align-items: center; gap: 5px; font-size: .8rem; font-weight: 600; padding: 5px 11px; border-radius: 8px; white-space: nowrap; }
   .tag-pill.online         { background: #e3f2fd; color: #0277bd; border: 1px solid #90caf9; }
   .tag-pill.core           { background: #fff8e1; color: #C24400; border: 1px solid #ffe082; }
+  .tag-pill.pathway        { background: #e0f7fa; color: #00695c; border: 1px solid #80deea; }
+  .tag-pill.program        { background: #e8eaf6; color: #303f9f; border: 1px solid #c5cae9; }
   .tag-pill.prereq-course  { background: #fff3e0; color: #C24400; border: 1px solid #ffcc80; }
   .tag-pill.prereq-program { background: #ede7f6; color: #4527a0; border: 1px solid #ce93d8; }
   .tag-pill.prereq-none    { background: #e8f5e9; color: #2e7d32; border: 1px solid #a5d6a7; }
@@ -487,8 +489,7 @@
     }
 
     grid.innerHTML = filtered.map((c, i) => {
-      const tags = buildTags(c);
-      const meta = buildMeta(c);
+      const tags = buildPreviewTags(c);
 
       return `<div class="card" data-idx="${i}" tabindex="0" role="button" aria-label="View details for ${esc(c["Course Name"] || "course")}">
         <div>
@@ -497,12 +498,32 @@
         </div>
         ${c["Course Description"] ? `<div class="description">${esc(c["Course Description"])}</div>` : ""}
         <div class="tag-row">${tags.join("")}</div>
-        ${meta.length ? `<div class="meta-row">${meta.join("")}</div>` : ""}
       </div>`;
     }).join("");
   }
 
-  function buildTags(c) {
+  function buildPreviewTags(c) {
+    const tags = [];
+    if (isYes(c["Online Course"]))
+      tags.push(`<span class="tag-pill online">
+        <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+        Online</span>`);
+    if (c["Core Graduation Credit"] && c["Core Graduation Credit"].trim() !== "")
+      tags.push(`<span class="tag-pill core">
+        <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>
+        Core Credit: ${esc(c["Core Graduation Credit"])}</span>`);
+    if (c["Pathways"] && c["Pathways"].trim() !== "")
+      tags.push(`<span class="tag-pill pathway">
+        <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg>
+        ${esc(c["Pathways"])}</span>`);
+    if (c["Programs"] && c["Programs"].trim() !== "")
+      tags.push(`<span class="tag-pill program">
+        <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
+        ${esc(c["Programs"])}</span>`);
+    return tags;
+  }
+
+  function buildFullTags(c) {
     const tags = [];
     if (isYes(c["Online Course"]))
       tags.push(`<span class="tag-pill online">
@@ -529,21 +550,8 @@
     return tags;
   }
 
-  function buildMeta(c) {
-    const meta = [];
-    if (c["Length of Course"])
-      meta.push(`<span class="meta-item">
-        <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-        ${esc(c["Length of Course"])}</span>`);
-    if (c["Programs"])
-      meta.push(`<span class="meta-item">
-        <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
-        ${esc(c["Programs"])}</span>`);
-    return meta;
-  }
-
   function openModal(c) {
-    const tags = buildTags(c);
+    const tags = buildFullTags(c);
     const details = [
       ["School",              c["School Name"]],
       ["Grade",               c["Grade"]],
