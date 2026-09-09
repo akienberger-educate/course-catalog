@@ -4,13 +4,14 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Course Catalog</title>
-<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet" />
+<link href="https://fonts.googleapis.com/css2?family=Roboto+Slab:wght@600;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet" />
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
   :root {
     --navy:   #1a2744;
     --blue:   #2f5bea;
+    --bps-blue: #007db3;
     --sky:    #e8eeff;
     --white:  #ffffff;
     --gray:   #f4f5f8;
@@ -19,14 +20,16 @@
     --muted:  #6b7494;
     --radius: 10px;
     --shadow: 0 2px 12px rgba(26,39,68,.08);
+    --font-header: 'Roboto Slab', 'Garamond', serif;
+    --font-body: 'Helvetica Neue', Helvetica, Arial, 'Century Gothic', sans-serif;
   }
 
-  body { font-family: 'DM Sans', sans-serif; background: var(--gray); color: var(--text); min-height: 100vh; }
+  body { font-family: var(--font-body); background: var(--gray); color: var(--text); min-height: 100vh; }
 
   /* ── Header ── */
-  header { background: var(--navy); padding: 24px 32px; }
-  header h1 { font-family: 'DM Serif Display', serif; font-size: 1.8rem; color: var(--white); letter-spacing: -.3px; }
-  header p  { color: #a0aece; margin-top: 4px; font-size: .9rem; }
+  header { background: var(--bps-blue); padding: 24px 32px; }
+  header h1 { font-family: var(--font-header); font-weight: 700; font-size: 1.8rem; color: var(--white); letter-spacing: -.3px; }
+  header p  { color: #e0f2fa; margin-top: 4px; font-size: .9rem; }
 
   /* ── Layout ── */
   .layout {
@@ -140,9 +143,9 @@
   .icon-strip { display: flex; gap: 6px; align-items: center; }
   .icon-pill { display: flex; align-items: center; gap: 4px; font-size: .72rem; font-weight: 600; padding: 3px 8px; border-radius: 20px; white-space: nowrap; }
   .icon-pill.online { background: #e3f2fd; color: #0277bd; border: 1px solid #90caf9; }
-  .icon-pill.core   { background: #fff8e1; color: #f57f17; border: 1px solid #ffe082; }
+  .icon-pill.core   { background: #fff8e1; color: #C24400; border: 1px solid #ffe082; }
 
-  .card h2 { font-family: 'DM Serif Display', serif; font-size: 1.05rem; line-height: 1.35; color: var(--navy); }
+  .card h2 { font-family: var(--font-header); font-weight: 700; font-size: 1.05rem; line-height: 1.35; color: var(--navy); }
   .school  { font-size: .82rem; color: var(--muted); }
 
   .description { font-size: .87rem; line-height: 1.6; color: #444c6a; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
@@ -152,7 +155,7 @@
   .meta-item svg { flex-shrink: 0; opacity: .7; }
 
   .prereq-badge { display: inline-flex; align-items: center; gap: 5px; font-size: .8rem; font-weight: 500; padding: 5px 11px; border-radius: 8px; width: fit-content; }
-  .prereq-badge.course-req  { background: #fff3e0; color: #e65100; border: 1px solid #ffcc80; }
+  .prereq-badge.course-req  { background: #fff3e0; color: #C24400; border: 1px solid #ffcc80; }
   .prereq-badge.program-req { background: #ede7f6; color: #4527a0; border: 1px solid #ce93d8; }
   .prereq-badge.no-req      { background: #e8f5e9; color: #2e7d32; border: 1px solid #a5d6a7; }
 
@@ -276,10 +279,10 @@
 </div>
 
 <script>
-  const SHEET_ID  = "1oDqMjM300awYb06w5xyPnwaNnGgNcI8O0cQL57Y5VfQ";
-  const SHEET_TAB = "Round1Data";
+  const SHEET_ID = "1oDqMjM300awYb06w5xyPnwaNnGgNcI8O0cQL57Y5VfQ";
+  const SHEET_GID = "17307769";
 
-  const CSV_URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(SHEET_TAB)}`;
+  const CSV_URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&gid=${SHEET_GID}`;
   let ALL_COURSES = [];
 
   async function loadData() {
