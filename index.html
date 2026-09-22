@@ -436,7 +436,84 @@
       render();
     });
 
+    // Click (or Enter/Space) on a card opens the detail modal
+    document.getElementById("grid").addEventListener("click", (e) => {
+      const card = e.target.closest(".card");
+      if (card) openModal(CURRENT_FILTERED[Number(card.dataset.idx)]);
+    });
+    document.getElementById("grid").addEventListener("keydown", (e) => {
+      if (e.key !== "Enter" && e.key !== " ") return;
+      const card = e.target.closest(".card");
+      if (card) { e.preventDefault(); openModal(CURRENT_FILTERED[Number(card.dataset.idx)]); }
+    });
+
+    document.getElementById("modalClose").addEventListener("click", closeModal);
+    document.getElementById("modalOverlay").addEventListener("click", (e) => {
+      if (e.target.id === "modalOverlay") closeModal();
+    });
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "Escape") closeModal();
+    });
+
     render();
+  }
+
+  let CURRENT_FILTERED = [];
+
+  function openModal(course) {
+    if (!course) return;
+    const credit = gradCredit(course);
+
+    const schoolRows = SCHOOLS.map(s => {
+      const status = schoolStatus(course[s.key]);
+      if (status === "no") return "";
+      const cls = status === "online" ? "online-school" : "in-person";
+      const suffix = status === "online" ? " (Online)" : " (In-Person)";
+      return `<span class="school-pill ${cls}">${esc(s.label)}${suffix}</span>`;
+    }).filter(Boolean).join("");
+
+    const metaItems = [];
+    if (course[F.trimesters]) metaItems.push(`<div class="modal-meta-item"><strong>Trimesters</strong>${esc(course[F.trimesters])}</div>`);
+    if (course[F.grade])      metaItems.push(`<div class="modal-meta-item"><strong>Grade Levels</strong>${esc(course[F.grade])}</div>`);
+    if (course[F.program])    metaItems.push(`<div class="modal-meta-item"><strong>Program</strong>${esc(course[F.program])}</div>`);
+    if (course[F.pathways])   metaItems.push(`<div class="modal-meta-item"><strong>Pathway</strong>${esc(course[F.pathways])}</div>`);
+    if (credit)                metaItems.push(`<div class="modal-meta-item"><strong>Core Grad Credit</strong>${esc(credit)}</div>`);
+
+    document.getElementById("modalContent").innerHTML = `
+      <h2 id="modalTitle">${esc(course[F.name] || "Untitled Course")}</h2>
+      ${course[F.department] ? `<div class="modal-department">${esc(course[F.department])}${course[F.number] ? " · " + esc(course[F.number]) : ""}</div>` : ""}
+
+      ${schoolRows ? `<div class="modal-section">
+        <div class="modal-section-label">Offered At</div>
+        <div class="modal-schools">${schoolRows}</div>
+      </div>` : ""}
+
+      ${course[F.description] ? `<div class="modal-section">
+        <div class="modal-section-label">Description</div>
+        <div class="modal-description">${esc(course[F.description])}</div>
+      </div>` : ""}
+
+      ${metaItems.length ? `<div class="modal-section">
+        <div class="modal-section-label">Details</div>
+        <div class="modal-meta-grid">${metaItems.join("")}</div>
+      </div>` : ""}
+
+      <div class="modal-section">
+        <div class="modal-section-label">Prerequisite</div>
+        ${hasPrereq(course)
+          ? `<div class="prereq-badge has-req">Prerequisite: ${esc(course[F.prereq])}</div>`
+          : `<div class="prereq-badge no-req">No Pre-req</div>`}
+      </div>
+    `;
+
+    document.getElementById("modalOverlay").classList.add("open");
+    document.getElementById("modalClose").focus();
+    document.body.style.overflow = "hidden";
+  }
+
+  function closeModal() {
+    document.getElementById("modalOverlay").classList.remove("open");
+    document.body.style.overflow = "";
   }
 
   function populateSelect(id, field) {
@@ -497,6 +574,7 @@
       return true;
     });
 
+    CURRENT_FILTERED = filtered;
     document.getElementById("countLabel").textContent = filtered.length;
     const grid = document.getElementById("grid");
 
@@ -510,7 +588,7 @@
       return;
     }
 
-    grid.innerHTML = filtered.map(c => {
+    grid.innerHTML = filtered.map((c, idx) => {
       const credit = gradCredit(c);
       const anyOnline = SCHOOLS.some(s => schoolStatus(c[s.key]) === "online");
 
@@ -532,14 +610,6 @@
             <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
             No Pre-req</div>`;
 
-      const schoolPills = SCHOOLS.map(s => {
-        const status = schoolStatus(c[s.key]);
-        if (status === "no") return "";
-        const cls = status === "online" ? "online-school" : "in-person";
-        const suffix = status === "online" ? " (Online)" : "";
-        return `<span class="school-pill ${cls}">${esc(s.label)}${suffix}</span>`;
-      }).join("");
-
       const meta = [];
       if (c[F.trimesters])
         meta.push(`<span class="meta-item">
@@ -550,17 +620,17 @@
           <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
           ${esc(c[F.program])}</span>`);
 
-      return `<div class="card">
+      return `<div class="card" data-idx="${idx}" tabindex="0" role="button" aria-haspopup="dialog" aria-label="View details for ${esc(c[F.name] || "course")}">
         <div class="card-top">
           ${c[F.number] ? `<span class="course-num">${esc(c[F.number])}</span>` : "<span></span>"}
           <div class="icon-strip">${icons.join("")}</div>
         </div>
         <h2>${esc(c[F.name] || "Untitled Course")}</h2>
         ${c[F.department] ? `<div class="department">${esc(c[F.department])}</div>` : ""}
-        ${schoolPills ? `<div class="school-row">${schoolPills}</div>` : ""}
         ${c[F.description] ? `<div class="description">${esc(c[F.description])}</div>` : ""}
         ${meta.length ? `<div class="meta-row">${meta.join("")}</div>` : ""}
         ${prereqHTML}
+        <div class="details-hint">View full details →</div>
       </div>`;
     }).join("");
   }
