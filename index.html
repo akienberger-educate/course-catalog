@@ -391,9 +391,15 @@
     return (c[F.gradReqA] || c[F.gradReqB] || "").trim();
   }
 
-  function schoolStatus(val) {
+  // NCA is an all-online school: any offering there is online, even when the
+  // sheet just says "yes" (Kennedy/Jefferson/BCCA use "yes" to mean in-person,
+  // and only mark "online only" when that section is online there).
+  const ALL_ONLINE_SCHOOLS = new Set(["NCA HS"]);
+
+  function schoolStatus(val, schoolKey) {
     const v = (val || "").trim().toLowerCase();
     if (!v || v === "no") return "no";
+    if (ALL_ONLINE_SCHOOLS.has(schoolKey)) return "online";
     if (v.includes("online")) return "online";
     return "yes";
   }
@@ -495,10 +501,10 @@
       if (q && !([c[F.number], c[F.name], c[F.description]]
           .some(f => (f||"").toLowerCase().includes(q)))) return false;
       if (!matches(c, grade, F.grade)) return false;
-      if (school && schoolStatus(c[school]) === "no") return false;
+      if (school && schoolStatus(c[school], school) === "no") return false;
       if (online) {
-        const anyOnline = SCHOOLS.some(s => schoolStatus(c[s.key]) === "online");
-        const anyInPerson = SCHOOLS.some(s => schoolStatus(c[s.key]) === "yes");
+        const anyOnline = SCHOOLS.some(s => schoolStatus(c[s.key], s.key) === "online");
+        const anyInPerson = SCHOOLS.some(s => schoolStatus(c[s.key], s.key) === "yes");
         if (online === "yes" && !anyOnline) return false;
         if (online === "no"  && !anyInPerson) return false;
       }
@@ -544,7 +550,7 @@
 
   function buildPreviewTags(c) {
     const tags = [];
-    const anyOnline = SCHOOLS.some(s => schoolStatus(c[s.key]) === "online");
+    const anyOnline = SCHOOLS.some(s => schoolStatus(c[s.key], s.key) === "online");
     const credit = gradCredit(c);
     if (anyOnline)
       tags.push(`<span class="tag-pill online">
@@ -563,7 +569,7 @@
 
   function buildFullTags(c) {
     const tags = [];
-    const anyOnline = SCHOOLS.some(s => schoolStatus(c[s.key]) === "online");
+    const anyOnline = SCHOOLS.some(s => schoolStatus(c[s.key], s.key) === "online");
     const credit = gradCredit(c);
     if (anyOnline)
       tags.push(`<span class="tag-pill online">
@@ -590,7 +596,7 @@
     const credit = gradCredit(c);
 
     const schoolTags = SCHOOLS.map(s => {
-      const status = schoolStatus(c[s.key]);
+      const status = schoolStatus(c[s.key], s.key);
       if (status === "no") return "";
       const cls = status === "online" ? "school-online" : "school-inperson";
       const suffix = status === "online" ? " (Online)" : " (In-Person)";
