@@ -4,45 +4,32 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Course Catalog</title>
-<!-- BPS Brand Guidelines: headlines/subheads = Roboto Slab (bold) or EB Garamond (bold);
-     body copy = simple sans serif (Helvetica, Arial, Calibri) -->
-<link href="https://fonts.googleapis.com/css2?family=Roboto+Slab:wght@700&display=swap" rel="stylesheet" />
+<link href="https://fonts.googleapis.com/css2?family=Roboto+Slab:wght@600;700&display=swap" rel="stylesheet" />
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
   :root {
-    /* ── BPS primary brand palette (starred colors, brand guide p.5) ── */
-    --bps-blue:    #007DB3;   /* primary */
-    --bps-orange:  #E2810E;
-    --bps-yellow:  #F8C423;
-    --bps-green:   #649E25;
-    --bps-purple:  #A22583;
-    --bps-gray:    #9F8F8F;
-
-    /* ── derived working colors ── */
-    --primary:      var(--bps-blue);
-    --primary-dark: #00587f;   /* darkened blue for text-on-white contrast */
-    --primary-tint: #e5f2f7;
-    --text:   #262626;
-    --muted:  #6b6b6b;
+    --navy:   #1a2744;
+    --blue:   #2f5bea;
+    --bps-blue: #007db3;
+    --sky:    #e8eeff;
     --white:  #ffffff;
-    --bg:     #f4f4f2;
-    --border: #dcdad5;
+    --gray:   #f4f5f8;
+    --border: #dde1ec;
+    --text:   #1a2744;
+    --muted:  #5a6382;
     --radius: 10px;
-    --shadow: 0 2px 12px rgba(0,0,0,.07);
+    --shadow: 0 2px 12px rgba(26,39,68,.08);
+    --font-header: 'Roboto Slab', 'Garamond', serif;
+    --font-body: 'Helvetica Neue', Helvetica, Arial, 'Century Gothic', sans-serif;
   }
 
-  body {
-    font-family: Arial, Helvetica, 'Helvetica Neue', sans-serif;
-    background: var(--bg); color: var(--text); min-height: 100vh;
-  }
-
-  h1, h2, .headline { font-family: 'Roboto Slab', serif; font-weight: 700; }
+  body { font-family: var(--font-body); background: var(--gray); color: var(--text); min-height: 100vh; }
 
   /* ── Header ── */
-  header { background: var(--primary); padding: 24px 32px; }
-  header h1 { font-size: 1.8rem; color: var(--white); letter-spacing: -.3px; }
-  header p  { color: #d6ecf5; margin-top: 4px; font-size: .9rem; }
+  header { background: var(--bps-blue); padding: 24px 32px; }
+  header h1 { font-family: var(--font-header); font-weight: 700; font-size: 1.8rem; color: var(--white); letter-spacing: -.3px; }
+  header p  { color: #ffffff; margin-top: 4px; font-size: .9rem; }
 
   /* ── Layout ── */
   .layout {
@@ -69,7 +56,7 @@
 
   .sidebar-title {
     font-size: .75rem;
-    font-weight: 700;
+    font-weight: 600;
     text-transform: uppercase;
     letter-spacing: .08em;
     color: var(--muted);
@@ -80,8 +67,8 @@
   .filter-label {
     display: block;
     font-size: .78rem;
-    font-weight: 700;
-    color: var(--text);
+    font-weight: 600;
+    color: var(--navy);
     margin-bottom: 6px;
   }
 
@@ -95,13 +82,13 @@
     background: var(--white);
     color: var(--text);
     appearance: none;
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='11' height='11' viewBox='0 0 24 24' fill='none' stroke='%236b6b6b' stroke-width='2.5'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='11' height='11' viewBox='0 0 24 24' fill='none' stroke='%236b7494' stroke-width='2.5'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
     background-repeat: no-repeat;
     background-position: right 9px center;
     cursor: pointer;
     transition: border-color .15s;
   }
-  .sidebar select:focus { outline: none; border-color: var(--primary); }
+  .sidebar select:focus { outline: none; border-color: var(--blue); }
 
   .sidebar-divider { border: none; border-top: 1px solid var(--border); margin: 18px 0; }
 
@@ -118,7 +105,7 @@
     transition: all .15s;
     text-align: center;
   }
-  #clearBtn:hover { border-color: var(--primary); color: var(--primary); background: var(--primary-tint); }
+  #clearBtn:hover { border-color: var(--blue); color: var(--blue); background: var(--sky); }
 
   /* ── Main content ── */
   .main { flex: 1; min-width: 0; }
@@ -133,7 +120,7 @@
     background: var(--white); color: var(--text);
     transition: border-color .15s;
   }
-  #search:focus { outline: none; border-color: var(--primary); }
+  #search:focus { outline: none; border-color: var(--blue); }
 
   .results-bar { font-size: .85rem; color: var(--muted); margin-bottom: 14px; }
   .results-bar strong { color: var(--text); }
@@ -148,72 +135,70 @@
     box-shadow: var(--shadow); transition: box-shadow .2s, border-color .2s, transform .15s;
     display: flex; flex-direction: column; gap: 10px;
   }
-  .card:hover { box-shadow: 0 6px 24px rgba(0,125,179,.16); border-color: #a9d6e8; transform: translateY(-2px); }
+  .card:hover { box-shadow: 0 6px 24px rgba(47,91,234,.12); border-color: #c2ccf5; transform: translateY(-2px); }
+  .card { cursor: pointer; }
+  .card:focus-visible { outline: 2.5px solid var(--blue); outline-offset: 2px; }
 
-  .card-top { display: flex; justify-content: space-between; align-items: center; }
-  .course-num { font-size: .78rem; font-weight: 700; color: var(--primary-dark); background: var(--primary-tint); padding: 3px 10px; border-radius: 20px; }
+  /* ── Modal ── */
+  .modal-overlay {
+    display: none; position: fixed; inset: 0; z-index: 100;
+    background: rgba(26,39,68,.55);
+    align-items: flex-start; justify-content: center;
+    padding: 40px 20px; overflow-y: auto;
+  }
+  .modal-overlay.open { display: flex; }
+  .modal-box {
+    position: relative; background: var(--white); border-radius: 14px;
+    max-width: 640px; width: 100%; padding: 32px;
+    box-shadow: 0 20px 60px rgba(26,39,68,.3);
+    animation: modalIn .18s ease-out;
+  }
+  @keyframes modalIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+  .modal-close {
+    position: absolute; top: 16px; right: 16px;
+    width: 32px; height: 32px; border-radius: 50%; border: none;
+    background: var(--gray); color: var(--muted);
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer; transition: background .15s, color .15s;
+  }
+  .modal-close:hover { background: var(--sky); color: var(--blue); }
+  .modal-num { font-size: .85rem; color: var(--muted); margin-top: 4px; margin-bottom: 4px; }
+  .modal-box h2 { font-family: var(--font-header); font-weight: 700; font-size: 1.6rem; color: var(--navy); padding-right: 30px; line-height: 1.3; }
+  .modal-box .description { -webkit-line-clamp: unset; overflow: visible; font-size: .95rem; line-height: 1.7; margin: 18px 0; white-space: pre-line; }
+  .modal-box .tag-row { margin-bottom: 18px; }
+  .modal-section-label { font-size: .72rem; font-weight: 600; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); margin-bottom: 8px; }
+  .modal-schools-row { margin-bottom: 20px; }
+  .modal-detail-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px 20px; border-top: 1px solid var(--border); padding-top: 16px; }
+  .modal-detail-item .label { font-size: .72rem; font-weight: 600; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); margin-bottom: 3px; }
+  .modal-detail-item .value { font-size: .9rem; color: var(--text); }
+  @media (max-width: 600px) { .modal-detail-grid { grid-template-columns: 1fr; } }
 
-  .icon-strip { display: flex; gap: 6px; align-items: center; flex-wrap: wrap; justify-content: flex-end; }
-  .icon-pill { display: flex; align-items: center; gap: 4px; font-size: .72rem; font-weight: 700; padding: 3px 8px; border-radius: 20px; white-space: nowrap; }
-  .icon-pill.online { background: var(--primary-tint); color: var(--primary-dark); border: 1px solid #9fcfe3; }
-  .icon-pill.core   { background: #fdf1d3; color: #93650a; border: 1px solid #f3d488; }
+  .subtitle-row { display: flex; align-items: center; flex-wrap: wrap; gap: 6px; margin-top: 3px; font-size: .78rem; font-weight: 500; color: var(--muted); letter-spacing: .02em; }
+  .subtitle-row .sep { color: var(--border); font-weight: 400; }
 
-  .card h2 { font-size: 1.05rem; line-height: 1.35; color: var(--primary-dark); }
-  .department  { font-size: .82rem; color: var(--muted); }
+  .tag-row { display: flex; flex-wrap: wrap; gap: 8px; }
+  .tag-pill { display: inline-flex; align-items: center; gap: 5px; font-size: .8rem; font-weight: 600; padding: 5px 11px; border-radius: 8px; white-space: nowrap; }
+  .tag-pill.online         { background: #e3f2fd; color: #01579b; border: 1px solid #90caf9; }
+  .tag-pill.core           { background: #fff8e1; color: #C24400; border: 1px solid #ffe082; }
+  .tag-pill.pathway        { background: #e0f7fa; color: #00695c; border: 1px solid #80deea; }
+  .tag-pill.program        { background: #e8eaf6; color: #303f9f; border: 1px solid #c5cae9; }
+  .tag-pill.prereq-required{ background: #fff3e0; color: #C24400; border: 1px solid #ffcc80; }
+  .tag-pill.prereq-none    { background: #e8f5e9; color: #2e7d32; border: 1px solid #a5d6a7; }
+  .tag-pill.school-inperson{ background: #eef1f8; color: var(--navy); border: 1px solid var(--border); }
+  .tag-pill.school-online  { background: #e3f2fd; color: #01579b; border: 1px solid #90caf9; }
 
-  .description { font-size: .87rem; line-height: 1.6; color: #454545; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+  .card h2 { font-family: var(--font-header); font-weight: 700; font-size: 1.3rem; line-height: 1.3; color: var(--navy); }
+
+  .description { font-size: .87rem; line-height: 1.6; color: #444c6a; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
 
   .meta-row { display: flex; flex-wrap: wrap; gap: 10px; }
   .meta-item { display: flex; align-items: center; gap: 5px; font-size: .82rem; color: var(--muted); }
   .meta-item svg { flex-shrink: 0; opacity: .7; }
 
-  .card { cursor: pointer; }
-  .card:focus-visible { outline: 2px solid var(--primary); outline-offset: 2px; }
-
-  .details-hint { font-size: .78rem; color: var(--primary-dark); font-weight: 700; margin-top: auto; }
-
-  .school-pill { font-size: .72rem; font-weight: 700; padding: 3px 9px; border-radius: 20px; border: 1px solid; }
-  .school-pill.in-person { background: #f1efec; color: var(--text); border-color: var(--border); }
-  .school-pill.online-school { background: var(--primary-tint); color: var(--primary-dark); border-color: #9fcfe3; }
-
-  /* ── Detail modal ── */
-  .modal-overlay {
-    position: fixed; inset: 0; background: rgba(20,20,20,.55);
-    display: none; align-items: center; justify-content: center;
-    padding: 20px; z-index: 100;
-  }
-  .modal-overlay.open { display: flex; }
-  .modal-box {
-    background: var(--white); border-radius: var(--radius);
-    max-width: 640px; width: 100%; max-height: 85vh; overflow-y: auto;
-    padding: 28px; position: relative; box-shadow: 0 20px 60px rgba(0,0,0,.3);
-  }
-  .modal-close {
-    position: absolute; top: 18px; right: 18px;
-    width: 32px; height: 32px; border-radius: 50%; border: none;
-    background: var(--bg); color: var(--muted); font-size: 1.1rem;
-    cursor: pointer; display: flex; align-items: center; justify-content: center;
-    transition: background .15s;
-  }
-  .modal-close:hover { background: var(--border); }
-  .modal-box h2 { font-size: 1.35rem; color: var(--primary-dark); margin-bottom: 6px; padding-right: 40px; }
-  .modal-department { font-size: .88rem; color: var(--muted); margin-bottom: 16px; }
-  .modal-section { margin-bottom: 18px; }
-  .modal-section-label { font-size: .72rem; font-weight: 700; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); margin-bottom: 6px; }
-  .modal-description { font-size: .92rem; line-height: 1.65; color: #333; white-space: pre-line; }
-  .modal-schools { display: flex; flex-wrap: wrap; gap: 6px; }
-  .modal-meta-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 12px; }
-  .modal-meta-item { font-size: .88rem; }
-  .modal-meta-item strong { display: block; font-size: .72rem; text-transform: uppercase; letter-spacing: .05em; color: var(--muted); font-weight: 700; margin-bottom: 2px; }
-
-  .prereq-badge { display: inline-flex; align-items: center; gap: 5px; font-size: .8rem; font-weight: 500; padding: 5px 11px; border-radius: 8px; width: fit-content; }
-  .prereq-badge.has-req     { background: #fbe6cd; color: #8a4c07; border: 1px solid var(--bps-orange); }
-  .prereq-badge.no-req      { background: #e6efd7; color: #3f6314; border: 1px solid var(--bps-green); }
-
   /* Loading */
   .status { text-align: center; padding: 64px 20px; color: var(--muted); font-size: 1rem; width: 100%; }
-  .status.error { color: #a22583; }
-  .spinner { width: 36px; height: 36px; border: 3px solid var(--border); border-top-color: var(--primary); border-radius: 50%; animation: spin .7s linear infinite; margin: 0 auto 16px; }
+  .status.error { color: #c0392b; }
+  .spinner { width: 36px; height: 36px; border: 3px solid var(--border); border-top-color: var(--blue); border-radius: 50%; animation: spin .7s linear infinite; margin: 0 auto 16px; }
   @keyframes spin { to { transform: rotate(360deg); } }
 
   .empty { text-align: center; padding: 64px 20px; color: var(--muted); grid-column: 1/-1; }
@@ -244,12 +229,12 @@
     <div class="sidebar-title">Filter Courses</div>
 
     <div class="filter-group">
-      <label class="filter-label">Grade</label>
+      <label class="filter-label" for="filterGrade">Grade</label>
       <select id="filterGrade"><option value="">All Grades</option></select>
     </div>
 
     <div class="filter-group">
-      <label class="filter-label">School</label>
+      <label class="filter-label" for="filterSchool">School</label>
       <select id="filterSchool">
         <option value="">All Schools</option>
         <option value="Kennedy HS">Kennedy HS</option>
@@ -260,7 +245,7 @@
     </div>
 
     <div class="filter-group">
-      <label class="filter-label">Delivery</label>
+      <label class="filter-label" for="filterOnline">Delivery</label>
       <select id="filterOnline">
         <option value="">Online or In-Person</option>
         <option value="yes">Online Available</option>
@@ -269,12 +254,12 @@
     </div>
 
     <div class="filter-group">
-      <label class="filter-label">Program</label>
+      <label class="filter-label" for="filterProgram">Program</label>
       <select id="filterProgram"><option value="">All Programs</option></select>
     </div>
 
     <div class="filter-group">
-      <label class="filter-label">Prerequisite</label>
+      <label class="filter-label" for="filterPrereq">Prerequisite</label>
       <select id="filterPrereq">
         <option value="">All</option>
         <option value="yes">Has Prerequisite</option>
@@ -283,40 +268,40 @@
     </div>
 
     <div class="filter-group">
-      <label class="filter-label">Trimesters</label>
+      <label class="filter-label" for="filterLength">Trimesters</label>
       <select id="filterLength"><option value="">All Lengths</option></select>
     </div>
 
     <div class="filter-group">
-      <label class="filter-label">Pathway</label>
+      <label class="filter-label" for="filterPathway">Pathway</label>
       <select id="filterPathway"><option value="">All Pathways</option></select>
     </div>
 
     <div class="filter-group">
-      <label class="filter-label">Core Grad Credit</label>
+      <label class="filter-label" for="filterGradCredit">Core Grad Credit</label>
       <select id="filterGradCredit"><option value="">All</option></select>
     </div>
 
     <hr class="sidebar-divider" />
-    <button id="clearBtn">✕ Clear All Filters</button>
+    <button id="clearBtn"><span aria-hidden="true">✕</span> Clear All Filters</button>
   </aside>
 
   <!-- Main content -->
   <div class="main">
 
-    <div class="status" id="status">
+    <div class="status" id="status" role="status" aria-live="polite">
       <div class="spinner"></div>
       <p>Loading courses…</p>
     </div>
 
     <div id="mainContent" style="display:none">
       <div class="search-wrap">
-        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true">
           <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
         </svg>
-        <input id="search" type="search" placeholder="Search by course name or number…" />
+        <input id="search" type="search" placeholder="Search by course name or number…" aria-label="Search courses by name or number" />
       </div>
-      <div class="results-bar"><strong id="countLabel">0</strong> courses found</div>
+      <div class="results-bar" aria-live="polite"><strong id="countLabel">0</strong> courses found</div>
       <div class="grid" id="grid"></div>
     </div>
 
@@ -325,8 +310,10 @@
 
 <!-- Course detail modal -->
 <div class="modal-overlay" id="modalOverlay">
-  <div class="modal-box" id="modalBox" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
-    <button class="modal-close" id="modalClose" aria-label="Close">✕</button>
+  <div class="modal-box" id="modalBox" role="dialog" aria-modal="true" aria-labelledby="modalTitle" tabindex="-1">
+    <button class="modal-close" id="modalClose" aria-label="Close course details">
+      <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+    </button>
     <div id="modalContent"></div>
   </div>
 </div>
@@ -337,6 +324,8 @@
 
   const CSV_URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(SHEET_TAB)}`;
   let ALL_COURSES = [];
+  let CURRENT_FILTERED = [];
+  let LAST_FOCUSED = null;
 
   // ── Field names, matching the "BPS Courses" sheet's header row ──
   const F = {
@@ -345,6 +334,7 @@
     department:  "Department",
     grade:       "Grade Levels",
     trimesters:  "# Trimesters",
+    creditType:  "Credit Type",
     prereq:      "Prerequisites",
     program:     "Program (CC, AVID, DA, BCCA, Internship, AP, Special Education, EL, Nobel)",
     pathways:    "Pathways",
@@ -436,84 +426,31 @@
       render();
     });
 
-    // Click (or Enter/Space) on a card opens the detail modal
-    document.getElementById("grid").addEventListener("click", (e) => {
+    document.getElementById("grid").addEventListener("click", e => {
       const card = e.target.closest(".card");
-      if (card) openModal(CURRENT_FILTERED[Number(card.dataset.idx)]);
+      if (!card) return;
+      const course = CURRENT_FILTERED[Number(card.dataset.idx)];
+      if (course) openModal(course);
     });
-    document.getElementById("grid").addEventListener("keydown", (e) => {
+    document.getElementById("grid").addEventListener("keydown", e => {
       if (e.key !== "Enter" && e.key !== " ") return;
       const card = e.target.closest(".card");
-      if (card) { e.preventDefault(); openModal(CURRENT_FILTERED[Number(card.dataset.idx)]); }
+      if (!card) return;
+      e.preventDefault();
+      const course = CURRENT_FILTERED[Number(card.dataset.idx)];
+      if (course) openModal(course);
     });
 
     document.getElementById("modalClose").addEventListener("click", closeModal);
-    document.getElementById("modalOverlay").addEventListener("click", (e) => {
+    document.getElementById("modalOverlay").addEventListener("click", e => {
       if (e.target.id === "modalOverlay") closeModal();
     });
-    document.addEventListener("keydown", (e) => {
+    document.addEventListener("keydown", e => {
       if (e.key === "Escape") closeModal();
+      trapModalTab(e);
     });
 
     render();
-  }
-
-  let CURRENT_FILTERED = [];
-
-  function openModal(course) {
-    if (!course) return;
-    const credit = gradCredit(course);
-
-    const schoolRows = SCHOOLS.map(s => {
-      const status = schoolStatus(course[s.key]);
-      if (status === "no") return "";
-      const cls = status === "online" ? "online-school" : "in-person";
-      const suffix = status === "online" ? " (Online)" : " (In-Person)";
-      return `<span class="school-pill ${cls}">${esc(s.label)}${suffix}</span>`;
-    }).filter(Boolean).join("");
-
-    const metaItems = [];
-    if (course[F.trimesters]) metaItems.push(`<div class="modal-meta-item"><strong>Trimesters</strong>${esc(course[F.trimesters])}</div>`);
-    if (course[F.grade])      metaItems.push(`<div class="modal-meta-item"><strong>Grade Levels</strong>${esc(course[F.grade])}</div>`);
-    if (course[F.program])    metaItems.push(`<div class="modal-meta-item"><strong>Program</strong>${esc(course[F.program])}</div>`);
-    if (course[F.pathways])   metaItems.push(`<div class="modal-meta-item"><strong>Pathway</strong>${esc(course[F.pathways])}</div>`);
-    if (credit)                metaItems.push(`<div class="modal-meta-item"><strong>Core Grad Credit</strong>${esc(credit)}</div>`);
-
-    document.getElementById("modalContent").innerHTML = `
-      <h2 id="modalTitle">${esc(course[F.name] || "Untitled Course")}</h2>
-      ${course[F.department] ? `<div class="modal-department">${esc(course[F.department])}${course[F.number] ? " · " + esc(course[F.number]) : ""}</div>` : ""}
-
-      ${schoolRows ? `<div class="modal-section">
-        <div class="modal-section-label">Offered At</div>
-        <div class="modal-schools">${schoolRows}</div>
-      </div>` : ""}
-
-      ${course[F.description] ? `<div class="modal-section">
-        <div class="modal-section-label">Description</div>
-        <div class="modal-description">${esc(course[F.description])}</div>
-      </div>` : ""}
-
-      ${metaItems.length ? `<div class="modal-section">
-        <div class="modal-section-label">Details</div>
-        <div class="modal-meta-grid">${metaItems.join("")}</div>
-      </div>` : ""}
-
-      <div class="modal-section">
-        <div class="modal-section-label">Prerequisite</div>
-        ${hasPrereq(course)
-          ? `<div class="prereq-badge has-req">Prerequisite: ${esc(course[F.prereq])}</div>`
-          : `<div class="prereq-badge no-req">No Pre-req</div>`}
-      </div>
-    `;
-
-    document.getElementById("modalOverlay").classList.add("open");
-    document.getElementById("modalClose").focus();
-    document.body.style.overflow = "hidden";
-  }
-
-  function closeModal() {
-    document.getElementById("modalOverlay").classList.remove("open");
-    document.body.style.overflow = "";
   }
 
   function populateSelect(id, field) {
@@ -574,13 +511,13 @@
       return true;
     });
 
-    CURRENT_FILTERED = filtered;
     document.getElementById("countLabel").textContent = filtered.length;
     const grid = document.getElementById("grid");
+    CURRENT_FILTERED = filtered;
 
     if (filtered.length === 0) {
       grid.innerHTML = `<div class="empty">
-        <svg width="48" height="48" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+        <svg width="48" height="48" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24" aria-hidden="true">
           <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
         </svg>
         <p>No courses match your filters.<br>Try clearing some filters.</p>
@@ -588,51 +525,120 @@
       return;
     }
 
-    grid.innerHTML = filtered.map((c, idx) => {
-      const credit = gradCredit(c);
-      const anyOnline = SCHOOLS.some(s => schoolStatus(c[s.key]) === "online");
+    grid.innerHTML = filtered.map((c, i) => {
+      const tags = buildPreviewTags(c);
+      const subtitleParts = [c[F.department], c[F.number], c[F.trimesters] ? `${c[F.trimesters]} tri` : ""].filter(Boolean);
 
-      const icons = [];
-      if (anyOnline)
-        icons.push(`<span class="icon-pill online">
-          <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
-          Online</span>`);
-      if (credit)
-        icons.push(`<span class="icon-pill core" title="Core Graduation Credit: ${esc(credit)}">
-          <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>
-          Core Credit</span>`);
-
-      const prereqHTML = hasPrereq(c)
-        ? `<div class="prereq-badge has-req" title="${esc(c[F.prereq])}">
-            <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
-            Prerequisite: ${esc(c[F.prereq])}</div>`
-        : `<div class="prereq-badge no-req">
-            <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
-            No Pre-req</div>`;
-
-      const meta = [];
-      if (c[F.trimesters])
-        meta.push(`<span class="meta-item">
-          <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-          ${esc(c[F.trimesters])} trimester${c[F.trimesters] === "1" ? "" : "s"}</span>`);
-      if (c[F.program])
-        meta.push(`<span class="meta-item">
-          <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
-          ${esc(c[F.program])}</span>`);
-
-      return `<div class="card" data-idx="${idx}" tabindex="0" role="button" aria-haspopup="dialog" aria-label="View details for ${esc(c[F.name] || "course")}">
-        <div class="card-top">
-          ${c[F.number] ? `<span class="course-num">${esc(c[F.number])}</span>` : "<span></span>"}
-          <div class="icon-strip">${icons.join("")}</div>
+      return `<div class="card" data-idx="${i}" tabindex="0" role="button" aria-label="View details for ${esc(c[F.name] || "course")}">
+        <div>
+          <h2>${esc(c[F.name] || "Untitled Course")}</h2>
+          <div class="subtitle-row">
+            ${subtitleParts.map((p, idx) => `${idx > 0 ? '<span class="sep">•</span>' : ""}<span>${esc(p)}</span>`).join("")}
+          </div>
         </div>
-        <h2>${esc(c[F.name] || "Untitled Course")}</h2>
-        ${c[F.department] ? `<div class="department">${esc(c[F.department])}</div>` : ""}
         ${c[F.description] ? `<div class="description">${esc(c[F.description])}</div>` : ""}
-        ${meta.length ? `<div class="meta-row">${meta.join("")}</div>` : ""}
-        ${prereqHTML}
-        <div class="details-hint">View full details →</div>
+        <div class="tag-row">${tags.join("")}</div>
       </div>`;
     }).join("");
+  }
+
+  function buildPreviewTags(c) {
+    const tags = [];
+    const anyOnline = SCHOOLS.some(s => schoolStatus(c[s.key]) === "online");
+    const credit = gradCredit(c);
+    if (anyOnline)
+      tags.push(`<span class="tag-pill online">
+        <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+        Online</span>`);
+    if (credit)
+      tags.push(`<span class="tag-pill core">
+        <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>
+        Core Credit: ${esc(credit)}</span>`);
+    if (c[F.program])
+      tags.push(`<span class="tag-pill program">
+        <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
+        ${esc(c[F.program])}</span>`);
+    return tags;
+  }
+
+  function buildFullTags(c) {
+    const tags = [];
+    const anyOnline = SCHOOLS.some(s => schoolStatus(c[s.key]) === "online");
+    const credit = gradCredit(c);
+    if (anyOnline)
+      tags.push(`<span class="tag-pill online">
+        <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+        Online</span>`);
+    if (credit)
+      tags.push(`<span class="tag-pill core">
+        <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>
+        Core Credit: ${esc(credit)}</span>`);
+
+    if (hasPrereq(c))
+      tags.push(`<span class="tag-pill prereq-required" title="${esc(c[F.prereq])}">
+        <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+        Prerequisite: ${esc(c[F.prereq])}</span>`);
+    else
+      tags.push(`<span class="tag-pill prereq-none">
+        <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>
+        No Pre-req</span>`);
+    return tags;
+  }
+
+  function openModal(c) {
+    const tags = buildFullTags(c);
+    const credit = gradCredit(c);
+
+    const schoolTags = SCHOOLS.map(s => {
+      const status = schoolStatus(c[s.key]);
+      if (status === "no") return "";
+      const cls = status === "online" ? "school-online" : "school-inperson";
+      const suffix = status === "online" ? " (Online)" : " (In-Person)";
+      return `<span class="tag-pill ${cls}">${esc(s.label)}${suffix}</span>`;
+    }).filter(Boolean).join("");
+
+    const details = [
+      ["Grade",         c[F.grade]],
+      ["Trimesters",    c[F.trimesters]],
+      ["Credit Type",   c[F.creditType]],
+      ["Program",       c[F.program]],
+      ["Pathways",      c[F.pathways]],
+    ].filter(([, v]) => v && v.trim() !== "");
+
+    document.getElementById("modalContent").innerHTML = `
+      <h2 id="modalTitle">${esc(c[F.name] || "Untitled Course")}</h2>
+      ${[c[F.department], c[F.number]].filter(Boolean).length ? `<div class="modal-num">${[c[F.department], c[F.number]].filter(Boolean).map(esc).join(" · ")}</div>` : ""}
+      <div class="tag-row">${tags.join("")}</div>
+      ${c[F.description] ? `<div class="description">${esc(c[F.description])}</div>` : ""}
+      ${schoolTags ? `<div class="modal-schools-row">
+        <div class="modal-section-label">Offered At</div>
+        <div class="tag-row">${schoolTags}</div>
+      </div>` : ""}
+      ${details.length ? `<div class="modal-detail-grid">${details.map(([label, value]) =>
+        `<div class="modal-detail-item"><div class="label">${esc(label)}</div><div class="value">${esc(value)}</div></div>`
+      ).join("")}</div>` : ""}
+    `;
+    document.getElementById("modalOverlay").classList.add("open");
+    document.body.style.overflow = "hidden";
+    LAST_FOCUSED = document.activeElement;
+    document.getElementById("modalBox").focus();
+  }
+
+  function closeModal() {
+    document.getElementById("modalOverlay").classList.remove("open");
+    document.body.style.overflow = "";
+    if (LAST_FOCUSED) LAST_FOCUSED.focus();
+  }
+
+  function trapModalTab(e) {
+    if (e.key !== "Tab") return;
+    const overlay = document.getElementById("modalOverlay");
+    if (!overlay.classList.contains("open")) return;
+    const focusable = overlay.querySelectorAll('button, [href], [tabindex]:not([tabindex="-1"])');
+    if (!focusable.length) return;
+    const first = focusable[0], last = focusable[focusable.length - 1];
+    if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+    else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
   }
 
   function esc(s) {
