@@ -576,7 +576,7 @@
 
     grid.innerHTML = filtered.map((c, i) => {
       const tags = buildPreviewTags(c);
-      const subtitleParts = [c[F.department], c[F.number], LENGTH_LABELS[lengthBucket(c)] || ""].filter(Boolean);
+      const subtitleParts = [c[F.number], LENGTH_LABELS[lengthBucket(c)] || ""].filter(Boolean);
 
       return `<div class="card" data-idx="${i}" tabindex="0" role="button" aria-label="View details for ${esc(c[F.name] || "course")}">
         <div>
@@ -657,7 +657,7 @@
 
     document.getElementById("modalContent").innerHTML = `
       <h2 id="modalTitle">${esc(c[F.name] || "Untitled Course")}</h2>
-      ${[c[F.department], c[F.number]].filter(Boolean).length ? `<div class="modal-num">${[c[F.department], c[F.number]].filter(Boolean).map(esc).join(" · ")}</div>` : ""}
+      ${c[F.number] ? `<div class="modal-num">${esc(c[F.number])}</div>` : ""}
       <div class="tag-row">${tags.join("")}</div>
       ${c[F.description] ? `<div class="description">${esc(c[F.description])}</div>` : ""}
       ${schoolTags ? `<div class="modal-schools-row">
