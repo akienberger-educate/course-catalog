@@ -353,8 +353,7 @@
     program:     "Program (CC, AVID, DA, BCCA, Internship, AP, Special Education, EL, Nobel)",
     pathways:    "Pathways",
     description: "Course Description",
-    gradReqA:    "Grad Requirement Category",
-    gradReqB:    "Grad Req. Category"
+    gradReq:     "Grad Req. Category"
   };
   const SCHOOLS = [
     { key: "Kennedy HS",   label: "Kennedy"   },
@@ -401,8 +400,13 @@
     });
   }
 
+  // Only "Grad Req. Category" actually holds graduation-credit subject data
+  // (English Language Arts 9/10/11/12, Personal Finance, Elective, Fine Arts,
+  // Grade 11 U.S. History). "Grad Requirement Category" holds unrelated
+  // dual-credit/program notes (College Credit Option, AP exam expected, OSHA
+  // certification, hours-per-week minimums, etc.) and must not be merged in.
   function gradCredit(c) {
-    return (c[F.gradReqA] || c[F.gradReqB] || "").trim();
+    return (c[F.gradReq] || "").trim();
   }
 
   // NCA is an all-online school: any offering there is online, even when the
