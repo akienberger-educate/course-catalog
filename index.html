@@ -4,32 +4,29 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Course Catalog</title>
-<link href="https://fonts.googleapis.com/css2?family=Roboto+Slab:wght@600;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet" />
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet" />
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
   :root {
     --navy:   #1a2744;
     --blue:   #2f5bea;
-    --bps-blue: #007db3;
     --sky:    #e8eeff;
     --white:  #ffffff;
     --gray:   #f4f5f8;
     --border: #dde1ec;
     --text:   #1a2744;
-    --muted:  #5a6382;
+    --muted:  #6b7494;
     --radius: 10px;
     --shadow: 0 2px 12px rgba(26,39,68,.08);
-    --font-header: 'Roboto Slab', 'Garamond', serif;
-    --font-body: 'Helvetica Neue', Helvetica, Arial, 'Century Gothic', sans-serif;
   }
 
-  body { font-family: var(--font-body); background: var(--gray); color: var(--text); min-height: 100vh; }
+  body { font-family: 'DM Sans', sans-serif; background: var(--gray); color: var(--text); min-height: 100vh; }
 
   /* ── Header ── */
-  header { background: var(--bps-blue); padding: 24px 32px; }
-  header h1 { font-family: var(--font-header); font-weight: 700; font-size: 1.8rem; color: var(--white); letter-spacing: -.3px; }
-  header p  { color: #ffffff; margin-top: 4px; font-size: .9rem; }
+  header { background: var(--navy); padding: 24px 32px; }
+  header h1 { font-family: 'DM Serif Display', serif; font-size: 1.8rem; color: var(--white); letter-spacing: -.3px; }
+  header p  { color: #a0aece; margin-top: 4px; font-size: .9rem; }
 
   /* ── Layout ── */
   .layout {
@@ -136,57 +133,17 @@
     display: flex; flex-direction: column; gap: 10px;
   }
   .card:hover { box-shadow: 0 6px 24px rgba(47,91,234,.12); border-color: #c2ccf5; transform: translateY(-2px); }
-  .card { cursor: pointer; }
-  .card:focus-visible { outline: 2.5px solid var(--blue); outline-offset: 2px; }
 
-  /* ── Modal ── */
-  .modal-overlay {
-    display: none; position: fixed; inset: 0; z-index: 100;
-    background: rgba(26,39,68,.55);
-    align-items: flex-start; justify-content: center;
-    padding: 40px 20px; overflow-y: auto;
-  }
-  .modal-overlay.open { display: flex; }
-  .modal-box {
-    position: relative; background: var(--white); border-radius: 14px;
-    max-width: 640px; width: 100%; padding: 32px;
-    box-shadow: 0 20px 60px rgba(26,39,68,.3);
-    animation: modalIn .18s ease-out;
-  }
-  @keyframes modalIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
-  .modal-close {
-    position: absolute; top: 16px; right: 16px;
-    width: 32px; height: 32px; border-radius: 50%; border: none;
-    background: var(--gray); color: var(--muted);
-    display: flex; align-items: center; justify-content: center;
-    cursor: pointer; transition: background .15s, color .15s;
-  }
-  .modal-close:hover { background: var(--sky); color: var(--blue); }
-  .modal-num { font-size: .85rem; color: var(--muted); margin-top: 4px; margin-bottom: 4px; }
-  .modal-schools { font-size: .88rem; color: var(--muted); margin-bottom: 16px; }
-  .modal-box h2 { font-family: var(--font-header); font-weight: 700; font-size: 1.6rem; color: var(--navy); padding-right: 30px; line-height: 1.3; }
-  .modal-box .description { -webkit-line-clamp: unset; overflow: visible; font-size: .95rem; line-height: 1.7; margin: 18px 0; }
-  .modal-box .tag-row { margin-bottom: 18px; }
-  .modal-detail-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px 20px; border-top: 1px solid var(--border); padding-top: 16px; }
-  .modal-detail-item .label { font-size: .72rem; font-weight: 600; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); margin-bottom: 3px; }
-  .modal-detail-item .value { font-size: .9rem; color: var(--text); }
-  @media (max-width: 600px) { .modal-detail-grid { grid-template-columns: 1fr; } }
+  .card-top { display: flex; justify-content: space-between; align-items: center; }
+  .course-num { font-size: .78rem; font-weight: 600; color: var(--blue); background: var(--sky); padding: 3px 10px; border-radius: 20px; }
 
-  .subtitle-row { display: flex; align-items: center; flex-wrap: wrap; gap: 6px; margin-top: 3px; font-size: .78rem; font-weight: 500; color: var(--muted); letter-spacing: .02em; }
-  .subtitle-row .sep { color: var(--border); font-weight: 400; }
+  .icon-strip { display: flex; gap: 6px; align-items: center; flex-wrap: wrap; justify-content: flex-end; }
+  .icon-pill { display: flex; align-items: center; gap: 4px; font-size: .72rem; font-weight: 600; padding: 3px 8px; border-radius: 20px; white-space: nowrap; }
+  .icon-pill.online { background: #e3f2fd; color: #0277bd; border: 1px solid #90caf9; }
+  .icon-pill.core   { background: #fff8e1; color: #f57f17; border: 1px solid #ffe082; }
 
-  .tag-row { display: flex; flex-wrap: wrap; gap: 8px; }
-  .tag-pill { display: inline-flex; align-items: center; gap: 5px; font-size: .8rem; font-weight: 600; padding: 5px 11px; border-radius: 8px; white-space: nowrap; }
-  .tag-pill.online         { background: #e3f2fd; color: #01579b; border: 1px solid #90caf9; }
-  .tag-pill.core           { background: #fff8e1; color: #C24400; border: 1px solid #ffe082; }
-  .tag-pill.pathway        { background: #e0f7fa; color: #00695c; border: 1px solid #80deea; }
-  .tag-pill.program        { background: #e8eaf6; color: #303f9f; border: 1px solid #c5cae9; }
-  .tag-pill.prereq-course  { background: #fff3e0; color: #C24400; border: 1px solid #ffcc80; }
-  .tag-pill.prereq-program { background: #ede7f6; color: #4527a0; border: 1px solid #ce93d8; }
-  .tag-pill.prereq-none    { background: #e8f5e9; color: #2e7d32; border: 1px solid #a5d6a7; }
-
-  .card h2 { font-family: var(--font-header); font-weight: 700; font-size: 1.3rem; line-height: 1.3; color: var(--navy); }
-  .school  { font-size: .82rem; color: var(--muted); }
+  .card h2 { font-family: 'DM Serif Display', serif; font-size: 1.05rem; line-height: 1.35; color: var(--navy); }
+  .department  { font-size: .82rem; color: var(--muted); }
 
   .description { font-size: .87rem; line-height: 1.6; color: #444c6a; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
 
@@ -194,7 +151,15 @@
   .meta-item { display: flex; align-items: center; gap: 5px; font-size: .82rem; color: var(--muted); }
   .meta-item svg { flex-shrink: 0; opacity: .7; }
 
-  
+  .school-row { display: flex; flex-wrap: wrap; gap: 6px; }
+  .school-pill { font-size: .72rem; font-weight: 600; padding: 3px 9px; border-radius: 20px; border: 1px solid; }
+  .school-pill.in-person { background: #eef1f8; color: var(--navy); border-color: var(--border); }
+  .school-pill.online-school { background: #e3f2fd; color: #0277bd; border-color: #90caf9; }
+
+  .prereq-badge { display: inline-flex; align-items: center; gap: 5px; font-size: .8rem; font-weight: 500; padding: 5px 11px; border-radius: 8px; width: fit-content; }
+  .prereq-badge.has-req     { background: #fff3e0; color: #e65100; border: 1px solid #ffcc80; }
+  .prereq-badge.no-req      { background: #e8f5e9; color: #2e7d32; border: 1px solid #a5d6a7; }
+
   /* Loading */
   .status { text-align: center; padding: 64px 20px; color: var(--muted); font-size: 1rem; width: 100%; }
   .status.error { color: #c0392b; }
@@ -229,109 +194,112 @@
     <div class="sidebar-title">Filter Courses</div>
 
     <div class="filter-group">
-      <label class="filter-label" for="filterGrade">Grade</label>
+      <label class="filter-label">Grade</label>
       <select id="filterGrade"><option value="">All Grades</option></select>
     </div>
 
     <div class="filter-group">
-      <label class="filter-label" for="filterOnline">Delivery</label>
-      <select id="filterOnline">
-        <option value="">Online or In-Person</option>
-        <option value="yes">Online Only</option>
-        <option value="no">In-Person Only</option>
+      <label class="filter-label">School</label>
+      <select id="filterSchool">
+        <option value="">All Schools</option>
+        <option value="Kennedy HS">Kennedy HS</option>
+        <option value="Jefferson HS">Jefferson HS</option>
+        <option value="NCA HS">NCA HS</option>
+        <option value="BCCA">BCCA</option>
       </select>
     </div>
 
     <div class="filter-group">
-      <label class="filter-label" for="filterSchool">School</label>
-      <select id="filterSchool"><option value="">All Schools</option></select>
+      <label class="filter-label">Delivery</label>
+      <select id="filterOnline">
+        <option value="">Online or In-Person</option>
+        <option value="yes">Online Available</option>
+        <option value="no">In-Person Available</option>
+      </select>
     </div>
 
     <div class="filter-group">
-      <label class="filter-label" for="filterProgram">Program</label>
+      <label class="filter-label">Program</label>
       <select id="filterProgram"><option value="">All Programs</option></select>
     </div>
 
     <div class="filter-group">
-      <label class="filter-label" for="filterPrereq">Prerequisite</label>
+      <label class="filter-label">Prerequisite</label>
       <select id="filterPrereq">
         <option value="">All</option>
-        <option value="course">Has Course Pre-req</option>
-        <option value="program">Has Program Pre-req</option>
-        <option value="none">No Pre-req</option>
+        <option value="yes">Has Prerequisite</option>
+        <option value="no">No Prerequisite</option>
       </select>
     </div>
 
     <div class="filter-group">
-      <label class="filter-label" for="filterLength">Length of Course</label>
+      <label class="filter-label">Trimesters</label>
       <select id="filterLength"><option value="">All Lengths</option></select>
     </div>
 
     <div class="filter-group">
-      <label class="filter-label" for="filterPathway">Pathway</label>
+      <label class="filter-label">Pathway</label>
       <select id="filterPathway"><option value="">All Pathways</option></select>
     </div>
 
     <div class="filter-group">
-      <label class="filter-label" for="filterGradCredit">Core Grad Credit</label>
-      <select id="filterGradCredit">
-        <option value="">All</option>
-        <option value="English">English</option>
-        <option value="Math">Math</option>
-        <option value="Science">Science</option>
-        <option value="Social Studies">Social Studies</option>
-        <option value="PE 9">PE 9</option>
-        <option value="PE 10">PE 10</option>
-        <option value="Health">Health</option>
-        <option value="Personal Finance">Personal Finance</option>
-        <option value="Fine Arts">Fine Arts</option>
-      </select>
+      <label class="filter-label">Core Grad Credit</label>
+      <select id="filterGradCredit"><option value="">All</option></select>
     </div>
 
     <hr class="sidebar-divider" />
-    <button id="clearBtn"><span aria-hidden="true">✕</span> Clear All Filters</button>
+    <button id="clearBtn">✕ Clear All Filters</button>
   </aside>
 
   <!-- Main content -->
   <div class="main">
 
-    <div class="status" id="status" role="status" aria-live="polite">
+    <div class="status" id="status">
       <div class="spinner"></div>
       <p>Loading courses…</p>
     </div>
 
     <div id="mainContent" style="display:none">
       <div class="search-wrap">
-        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true">
+        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
           <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
         </svg>
-        <input id="search" type="search" placeholder="Search by course name or number…" aria-label="Search courses by name or number" />
+        <input id="search" type="search" placeholder="Search by course name or number…" />
       </div>
-      <div class="results-bar" aria-live="polite"><strong id="countLabel">0</strong> courses found</div>
+      <div class="results-bar"><strong id="countLabel">0</strong> courses found</div>
       <div class="grid" id="grid"></div>
     </div>
 
   </div>
 </div>
 
-<!-- Course detail modal -->
-<div class="modal-overlay" id="modalOverlay">
-  <div class="modal-box" id="modalBox" role="dialog" aria-modal="true" aria-labelledby="modalTitle" tabindex="-1">
-    <button class="modal-close" id="modalClose" aria-label="Close course details">
-      <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-    </button>
-    <div id="modalContent"></div>
-  </div>
-</div>
-
 <script>
-  const SHEET_ID = "1oDqMjM300awYb06w5xyPnwaNnGgNcI8O0cQL57Y5VfQ";
-  const SHEET_GID = "17307769";
+  const SHEET_ID  = "1MQTPr8mOolk0_3bpsnKUl_5v4X13iCwwSOpdj33vnDs";
+  const SHEET_TAB = "BPS Courses";
 
-  const CSV_URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&gid=${SHEET_GID}`;
+  const CSV_URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(SHEET_TAB)}`;
   let ALL_COURSES = [];
-  let CURRENT_FILTERED = [];
-  let LAST_FOCUSED = null;
+
+  // ── Field names, matching the "BPS Courses" sheet's header row ──
+  const F = {
+    number:      "Course #",
+    name:        "Course Name",
+    department:  "Department",
+    grade:       "Grade Levels",
+    trimesters:  "# Trimesters",
+    prereq:      "Prerequisites",
+    program:     "Program (CC, AVID, DA, BCCA, Internship, AP, Special Education, EL, Nobel)",
+    pathways:    "Pathways",
+    description: "Course Description",
+    gradReqA:    "Grad Requirement Category",
+    gradReqB:    "Grad Req. Category"
+  };
+  const SCHOOLS = [
+    { key: "Kennedy HS",   label: "Kennedy"   },
+    { key: "Jefferson HS", label: "Jefferson" },
+    { key: "NCA HS",       label: "NCA"       },
+    { key: "BCCA",         label: "BCCA"      }
+  ];
 
   async function loadData() {
     try {
@@ -361,12 +329,30 @@
     }
     if (cur || cells.length) { cells.push(cur); rows.push(cells); }
     if (rows.length < 2) return [];
-    const headers = rows[0].map(h => h.trim());
+    // Normalize headers: collapse internal newlines/whitespace (some sheet headers wrap
+    // onto two lines, e.g. the "Program (...)" column) into a single clean string.
+    const headers = rows[0].map(h => h.replace(/\s+/g, " ").trim());
     return rows.slice(1).map(row => {
       const obj = {};
-      headers.forEach((h, i) => { obj[h] = (row[i] || "").trim(); });
+      headers.forEach((h, i) => { if (h) obj[h] = (row[i] || "").trim(); });
       return obj;
     });
+  }
+
+  function gradCredit(c) {
+    return (c[F.gradReqA] || c[F.gradReqB] || "").trim();
+  }
+
+  function schoolStatus(val) {
+    const v = (val || "").trim().toLowerCase();
+    if (!v || v === "no") return "no";
+    if (v.includes("online")) return "online";
+    return "yes";
+  }
+
+  function hasPrereq(c) {
+    const v = (c[F.prereq] || "").trim().toLowerCase();
+    return v !== "" && v !== "none" && v !== "no" && v !== "n/a";
   }
 
   function init() {
@@ -374,46 +360,22 @@
     document.getElementById("mainContent").style.display = "block";
     document.getElementById("sidebar").classList.add("visible");
 
-    populateSelect("filterGrade",   "Grade");
-    populateSelect("filterSchool",  "School Name");
-    populateSelect("filterProgram", "Programs");
-    populateSelect("filterLength",  "Length of Course");
-    populateSelect("filterPathway", "Pathways");
+    populateSelect("filterGrade", F.grade);
+    populateSelect("filterProgram", F.program);
+    populateSelect("filterLength", F.trimesters);
+    populateSelect("filterPathway", F.pathways);
+    populateSelectFromValues("filterGradCredit", ALL_COURSES.map(gradCredit));
 
-    ["search","filterGrade","filterOnline","filterSchool","filterProgram",
+    ["search","filterGrade","filterSchool","filterOnline","filterProgram",
      "filterPrereq","filterLength","filterPathway","filterGradCredit"]
       .forEach(id => document.getElementById(id).addEventListener("input", render));
 
     document.getElementById("clearBtn").addEventListener("click", () => {
       document.getElementById("search").value = "";
-      ["filterGrade","filterOnline","filterSchool","filterProgram",
+      ["filterGrade","filterSchool","filterOnline","filterProgram",
        "filterPrereq","filterLength","filterPathway","filterGradCredit"]
         .forEach(id => document.getElementById(id).value = "");
       render();
-    });
-
-    document.getElementById("grid").addEventListener("click", e => {
-      const card = e.target.closest(".card");
-      if (!card) return;
-      const course = CURRENT_FILTERED[Number(card.dataset.idx)];
-      if (course) openModal(course);
-    });
-    document.getElementById("grid").addEventListener("keydown", e => {
-      if (e.key !== "Enter" && e.key !== " ") return;
-      const card = e.target.closest(".card");
-      if (!card) return;
-      e.preventDefault();
-      const course = CURRENT_FILTERED[Number(card.dataset.idx)];
-      if (course) openModal(course);
-    });
-
-    document.getElementById("modalClose").addEventListener("click", closeModal);
-    document.getElementById("modalOverlay").addEventListener("click", e => {
-      if (e.target.id === "modalOverlay") closeModal();
-    });
-    document.addEventListener("keydown", e => {
-      if (e.key === "Escape") closeModal();
-      trapModalTab(e);
     });
 
     render();
@@ -431,16 +393,14 @@
     });
   }
 
-  function prereqType(val) {
-    const v = (val || "").toLowerCase();
-    if (v.includes("course"))   return "course";
-    if (v.includes("program"))  return "program";
-    if (v.includes("no"))       return "none";
-    return "";
-  }
-
-  function isYes(val) {
-    return ["yes","true","1","x","y"].some(v => (val||"").toLowerCase().includes(v));
+  function populateSelectFromValues(id, values) {
+    const sel = document.getElementById(id);
+    const vals = new Set();
+    values.forEach(v => { const t = (v || "").trim(); if (t) vals.add(t); });
+    [...vals].sort().forEach(v => {
+      const opt = document.createElement("option");
+      opt.value = v; opt.textContent = v; sel.appendChild(opt);
+    });
   }
 
   function matches(course, filterVal, field) {
@@ -451,39 +411,40 @@
   function render() {
     const q          = document.getElementById("search").value.trim().toLowerCase();
     const grade      = document.getElementById("filterGrade").value;
-    const online     = document.getElementById("filterOnline").value;
     const school     = document.getElementById("filterSchool").value;
+    const online     = document.getElementById("filterOnline").value;
     const prog       = document.getElementById("filterProgram").value;
     const prereq     = document.getElementById("filterPrereq").value;
     const length     = document.getElementById("filterLength").value;
     const path       = document.getElementById("filterPathway").value;
-    const gradCredit = document.getElementById("filterGradCredit").value;
+    const gradCred   = document.getElementById("filterGradCredit").value;
 
     const filtered = ALL_COURSES.filter(c => {
-      if (q && !([c["Course Name"], c["Course Number"], c["Course Description"]]
+      if (q && !([c[F.number], c[F.name], c[F.description]]
           .some(f => (f||"").toLowerCase().includes(q)))) return false;
-      if (!matches(c, grade,  "Grade"))       return false;
+      if (!matches(c, grade, F.grade)) return false;
+      if (school && schoolStatus(c[school]) === "no") return false;
       if (online) {
-        const isOnline = isYes(c["Online Course"]);
-        if (online === "yes" && !isOnline) return false;
-        if (online === "no"  &&  isOnline) return false;
+        const anyOnline = SCHOOLS.some(s => schoolStatus(c[s.key]) === "online");
+        const anyInPerson = SCHOOLS.some(s => schoolStatus(c[s.key]) === "yes");
+        if (online === "yes" && !anyOnline) return false;
+        if (online === "no"  && !anyInPerson) return false;
       }
-      if (!matches(c, school, "School Name")) return false;
-      if (!matches(c, prog,   "Programs"))    return false;
-      if (prereq && prereqType(c["Prerequisite"]) !== prereq) return false;
-      if (!matches(c, length, "Length of Course")) return false;
-      if (!matches(c, path,   "Pathways"))    return false;
-      if (gradCredit && (c["Core Graduation Credit"]||"").toLowerCase() !== gradCredit.toLowerCase()) return false;
+      if (!matches(c, prog, F.program)) return false;
+      if (prereq === "yes" && !hasPrereq(c)) return false;
+      if (prereq === "no"  &&  hasPrereq(c)) return false;
+      if (!matches(c, length, F.trimesters)) return false;
+      if (!matches(c, path, F.pathways)) return false;
+      if (gradCred && gradCredit(c).toLowerCase() !== gradCred.toLowerCase()) return false;
       return true;
     });
 
     document.getElementById("countLabel").textContent = filtered.length;
     const grid = document.getElementById("grid");
-    CURRENT_FILTERED = filtered;
 
     if (filtered.length === 0) {
       grid.innerHTML = `<div class="empty">
-        <svg width="48" height="48" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24" aria-hidden="true">
+        <svg width="48" height="48" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
           <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
         </svg>
         <p>No courses match your filters.<br>Try clearing some filters.</p>
@@ -491,109 +452,59 @@
       return;
     }
 
-    grid.innerHTML = filtered.map((c, i) => {
-      const tags = buildPreviewTags(c);
+    grid.innerHTML = filtered.map(c => {
+      const credit = gradCredit(c);
+      const anyOnline = SCHOOLS.some(s => schoolStatus(c[s.key]) === "online");
 
-      return `<div class="card" data-idx="${i}" tabindex="0" role="button" aria-label="View details for ${esc(c["Course Name"] || "course")}">
-        <div>
-          <h2>${esc(c["Course Name"] || "Untitled Course")}</h2>
-          <div class="subtitle-row">
-            ${c["Course Number"] ? `<span>${esc(c["Course Number"])}</span>` : ""}
-            ${c["Course Number"] && c["Length of Course"] ? `<span class="sep">•</span>` : ""}
-            ${c["Length of Course"] ? `<span>${esc(c["Length of Course"])}</span>` : ""}
-          </div>
+      const icons = [];
+      if (anyOnline)
+        icons.push(`<span class="icon-pill online">
+          <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+          Online</span>`);
+      if (credit)
+        icons.push(`<span class="icon-pill core" title="Core Graduation Credit: ${esc(credit)}">
+          <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>
+          Core Credit</span>`);
+
+      const prereqHTML = hasPrereq(c)
+        ? `<div class="prereq-badge has-req" title="${esc(c[F.prereq])}">
+            <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+            Prerequisite: ${esc(c[F.prereq])}</div>`
+        : `<div class="prereq-badge no-req">
+            <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+            No Pre-req</div>`;
+
+      const schoolPills = SCHOOLS.map(s => {
+        const status = schoolStatus(c[s.key]);
+        if (status === "no") return "";
+        const cls = status === "online" ? "online-school" : "in-person";
+        const suffix = status === "online" ? " (Online)" : "";
+        return `<span class="school-pill ${cls}">${esc(s.label)}${suffix}</span>`;
+      }).join("");
+
+      const meta = [];
+      if (c[F.trimesters])
+        meta.push(`<span class="meta-item">
+          <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+          ${esc(c[F.trimesters])} trimester${c[F.trimesters] === "1" ? "" : "s"}</span>`);
+      if (c[F.program])
+        meta.push(`<span class="meta-item">
+          <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
+          ${esc(c[F.program])}</span>`);
+
+      return `<div class="card">
+        <div class="card-top">
+          ${c[F.number] ? `<span class="course-num">${esc(c[F.number])}</span>` : "<span></span>"}
+          <div class="icon-strip">${icons.join("")}</div>
         </div>
-        ${c["Course Description"] ? `<div class="description">${esc(c["Course Description"])}</div>` : ""}
-        <div class="tag-row">${tags.join("")}</div>
+        <h2>${esc(c[F.name] || "Untitled Course")}</h2>
+        ${c[F.department] ? `<div class="department">${esc(c[F.department])}</div>` : ""}
+        ${schoolPills ? `<div class="school-row">${schoolPills}</div>` : ""}
+        ${c[F.description] ? `<div class="description">${esc(c[F.description])}</div>` : ""}
+        ${meta.length ? `<div class="meta-row">${meta.join("")}</div>` : ""}
+        ${prereqHTML}
       </div>`;
     }).join("");
-  }
-
-  function buildPreviewTags(c) {
-    const tags = [];
-    if (isYes(c["Online Course"]))
-      tags.push(`<span class="tag-pill online">
-        <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
-        Online</span>`);
-    if (c["Core Graduation Credit"] && c["Core Graduation Credit"].trim() !== "")
-      tags.push(`<span class="tag-pill core">
-        <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>
-        Core Credit: ${esc(c["Core Graduation Credit"])}</span>`);
-    if (c["Programs"] && c["Programs"].trim() !== "")
-      tags.push(`<span class="tag-pill program">
-        <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
-        ${esc(c["Programs"])}</span>`);
-    return tags;
-  }
-
-  function buildFullTags(c) {
-    const tags = [];
-    if (isYes(c["Online Course"]))
-      tags.push(`<span class="tag-pill online">
-        <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
-        Online</span>`);
-    if (c["Core Graduation Credit"] && c["Core Graduation Credit"].trim() !== "")
-      tags.push(`<span class="tag-pill core">
-        <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>
-        Core Credit: ${esc(c["Core Graduation Credit"])}</span>`);
-
-    const pt = prereqType(c["Prerequisite"]);
-    if (pt === "course")
-      tags.push(`<span class="tag-pill prereq-course">
-        <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
-        Course Pre-req Required</span>`);
-    else if (pt === "program")
-      tags.push(`<span class="tag-pill prereq-program">
-        <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
-        Program Pre-req Required</span>`);
-    else
-      tags.push(`<span class="tag-pill prereq-none">
-        <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>
-        No Pre-req</span>`);
-    return tags;
-  }
-
-  function openModal(c) {
-    const tags = buildFullTags(c);
-    const details = [
-      ["School",              c["School Name"]],
-      ["Grade",               c["Grade"]],
-      ["Length of Course",    c["Length of Course"]],
-      ["Credit Type",         c["CreditType"]],
-      ["Programs",            c["Programs"]],
-      ["Pathways",            c["Pathways"]],
-    ].filter(([, v]) => v && v.trim() !== "");
-
-    document.getElementById("modalContent").innerHTML = `
-      <h2 id="modalTitle">${esc(c["Course Name"] || "Untitled Course")}</h2>
-      ${c["Course Number"] ? `<div class="modal-num">${esc(c["Course Number"])}</div>` : ""}
-      <div class="tag-row">${tags.join("")}</div>
-      ${c["Course Description"] ? `<div class="description">${esc(c["Course Description"])}</div>` : ""}
-      ${details.length ? `<div class="modal-detail-grid">${details.map(([label, value]) =>
-        `<div class="modal-detail-item"><div class="label">${esc(label)}</div><div class="value">${esc(value)}</div></div>`
-      ).join("")}</div>` : ""}
-    `;
-    document.getElementById("modalOverlay").classList.add("open");
-    document.body.style.overflow = "hidden";
-    LAST_FOCUSED = document.activeElement;
-    document.getElementById("modalBox").focus();
-  }
-
-  function closeModal() {
-    document.getElementById("modalOverlay").classList.remove("open");
-    document.body.style.overflow = "";
-    if (LAST_FOCUSED) LAST_FOCUSED.focus();
-  }
-
-  function trapModalTab(e) {
-    if (e.key !== "Tab") return;
-    const overlay = document.getElementById("modalOverlay");
-    if (!overlay.classList.contains("open")) return;
-    const focusable = overlay.querySelectorAll('button, [href], [tabindex]:not([tabindex="-1"])');
-    if (!focusable.length) return;
-    const first = focusable[0], last = focusable[focusable.length - 1];
-    if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
-    else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
   }
 
   function esc(s) {
