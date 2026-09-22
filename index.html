@@ -90,6 +90,10 @@
   }
   .sidebar select:focus { outline: none; border-color: var(--blue); }
 
+  .grade-checks { display: flex; flex-wrap: wrap; gap: 10px 14px; }
+  .grade-checks label { display: flex; align-items: center; gap: 5px; font-size: .85rem; color: var(--text); cursor: pointer; }
+  .grade-checks input[type="checkbox"] { accent-color: var(--blue); cursor: pointer; width: 15px; height: 15px; }
+
   .sidebar-divider { border: none; border-top: 1px solid var(--border); margin: 18px 0; }
 
   #clearBtn {
@@ -229,8 +233,13 @@
     <div class="sidebar-title">Filter Courses</div>
 
     <div class="filter-group">
-      <label class="filter-label" for="filterGrade">Grade</label>
-      <select id="filterGrade"><option value="">All Grades</option></select>
+      <label class="filter-label">Grade</label>
+      <div class="grade-checks">
+        <label><input type="checkbox" class="gradeCheck" value="9" /> 9th</label>
+        <label><input type="checkbox" class="gradeCheck" value="10" /> 10th</label>
+        <label><input type="checkbox" class="gradeCheck" value="11" /> 11th</label>
+        <label><input type="checkbox" class="gradeCheck" value="12" /> 12th</label>
+      </div>
     </div>
 
     <div class="filter-group">
@@ -254,6 +263,11 @@
     </div>
 
     <div class="filter-group">
+      <label class="filter-label" for="filterDepartment">Department</label>
+      <select id="filterDepartment"><option value="">All Departments</option></select>
+    </div>
+
+    <div class="filter-group">
       <label class="filter-label" for="filterProgram">Program</label>
       <select id="filterProgram"><option value="">All Programs</option></select>
     </div>
@@ -268,13 +282,13 @@
     </div>
 
     <div class="filter-group">
-      <label class="filter-label" for="filterLength">Trimesters</label>
-      <select id="filterLength"><option value="">All Lengths</option></select>
-    </div>
-
-    <div class="filter-group">
-      <label class="filter-label" for="filterPathway">Pathway</label>
-      <select id="filterPathway"><option value="">All Pathways</option></select>
+      <label class="filter-label" for="filterLength">Length</label>
+      <select id="filterLength">
+        <option value="">All Lengths</option>
+        <option value="1">1 Trimester</option>
+        <option value="2">2 Trimesters</option>
+        <option value="full">Full Year (3 Trimesters)</option>
+      </select>
     </div>
 
     <div class="filter-group">
@@ -409,26 +423,49 @@
     return v !== "" && v !== "none" && v !== "no" && v !== "n/a";
   }
 
+  // Sheet's "# Trimesters" values are messy ("1", "2-3", "3 (2 periods)", "1–3", ...).
+  // Bucket every course into one of three lengths for filtering/display; the raw
+  // value always stays visible in the modal's detail grid for unusual cases.
+  const LENGTH_LABELS = { "1": "1 Trimester", "2": "2 Trimesters", "full": "Full Year (3 Trimesters)" };
+
+  function lengthBucket(c) {
+    const raw = (c[F.trimesters] || "").replace(/\([^)]*\)/g, ""); // strip "(2 periods)"-type notes
+    const nums = (raw.match(/\d+/g) || []).map(Number);
+    if (!nums.length) return "";
+    const max = Math.max(...nums);
+    if (max >= 3) return "full";
+    if (max === 2) return "2";
+    if (max === 1) return "1";
+    return "";
+  }
+
+  // Grade Levels values look like "9,10,11,12", "10", or even multi-line
+  // "JHS: 9, 10,11,12\nKHS: 10, 11, 12" — pull out every 9/10/11/12 token present.
+  function parseGrades(c) {
+    return new Set((c[F.grade] || "").match(/\b(9|10|11|12)\b/g) || []);
+  }
+
   function init() {
     document.getElementById("status").style.display = "none";
     document.getElementById("mainContent").style.display = "block";
     document.getElementById("sidebar").classList.add("visible");
 
-    populateSelect("filterGrade", F.grade);
+    populateSelect("filterDepartment", F.department);
     populateSelect("filterProgram", F.program);
-    populateSelect("filterLength", F.trimesters);
-    populateSelect("filterPathway", F.pathways);
     populateSelectFromValues("filterGradCredit", ALL_COURSES.map(gradCredit));
 
-    ["search","filterGrade","filterSchool","filterOnline","filterProgram",
-     "filterPrereq","filterLength","filterPathway","filterGradCredit"]
+    ["search","filterDepartment","filterSchool","filterOnline","filterProgram",
+     "filterPrereq","filterLength","filterGradCredit"]
       .forEach(id => document.getElementById(id).addEventListener("input", render));
+
+    document.querySelectorAll(".gradeCheck").forEach(cb => cb.addEventListener("change", render));
 
     document.getElementById("clearBtn").addEventListener("click", () => {
       document.getElementById("search").value = "";
-      ["filterGrade","filterSchool","filterOnline","filterProgram",
-       "filterPrereq","filterLength","filterPathway","filterGradCredit"]
+      ["filterDepartment","filterSchool","filterOnline","filterProgram",
+       "filterPrereq","filterLength","filterGradCredit"]
         .forEach(id => document.getElementById(id).value = "");
+      document.querySelectorAll(".gradeCheck").forEach(cb => cb.checked = false);
       render();
     });
 
@@ -488,19 +525,23 @@
 
   function render() {
     const q          = document.getElementById("search").value.trim().toLowerCase();
-    const grade      = document.getElementById("filterGrade").value;
+    const grades     = [...document.querySelectorAll(".gradeCheck:checked")].map(cb => cb.value);
+    const dept       = document.getElementById("filterDepartment").value;
     const school     = document.getElementById("filterSchool").value;
     const online     = document.getElementById("filterOnline").value;
     const prog       = document.getElementById("filterProgram").value;
     const prereq     = document.getElementById("filterPrereq").value;
     const length     = document.getElementById("filterLength").value;
-    const path       = document.getElementById("filterPathway").value;
     const gradCred   = document.getElementById("filterGradCredit").value;
 
     const filtered = ALL_COURSES.filter(c => {
       if (q && !([c[F.number], c[F.name], c[F.description]]
           .some(f => (f||"").toLowerCase().includes(q)))) return false;
-      if (!matches(c, grade, F.grade)) return false;
+      if (grades.length) {
+        const courseGrades = parseGrades(c);
+        if (!grades.some(g => courseGrades.has(g))) return false;
+      }
+      if (!matches(c, dept, F.department)) return false;
       if (school && schoolStatus(c[school], school) === "no") return false;
       if (online) {
         const anyOnline = SCHOOLS.some(s => schoolStatus(c[s.key], s.key) === "online");
@@ -511,8 +552,7 @@
       if (!matches(c, prog, F.program)) return false;
       if (prereq === "yes" && !hasPrereq(c)) return false;
       if (prereq === "no"  &&  hasPrereq(c)) return false;
-      if (!matches(c, length, F.trimesters)) return false;
-      if (!matches(c, path, F.pathways)) return false;
+      if (length && lengthBucket(c) !== length) return false;
       if (gradCred && gradCredit(c).toLowerCase() !== gradCred.toLowerCase()) return false;
       return true;
     });
@@ -533,7 +573,7 @@
 
     grid.innerHTML = filtered.map((c, i) => {
       const tags = buildPreviewTags(c);
-      const subtitleParts = [c[F.department], c[F.number], c[F.trimesters] ? `${c[F.trimesters]} tri` : ""].filter(Boolean);
+      const subtitleParts = [c[F.department], c[F.number], LENGTH_LABELS[lengthBucket(c)] || ""].filter(Boolean);
 
       return `<div class="card" data-idx="${i}" tabindex="0" role="button" aria-label="View details for ${esc(c[F.name] || "course")}">
         <div>
@@ -604,8 +644,9 @@
     }).filter(Boolean).join("");
 
     const details = [
+      ["Department",    c[F.department]],
       ["Grade",         c[F.grade]],
-      ["Trimesters",    c[F.trimesters]],
+      ["Length",        c[F.trimesters]],
       ["Credit Type",   c[F.creditType]],
       ["Program",       c[F.program]],
       ["Pathways",      c[F.pathways]],
