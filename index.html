@@ -230,6 +230,13 @@
 
   <!-- Sidebar filters -->
   <aside class="sidebar" id="sidebar">
+    <div class="search-wrap" style="margin-bottom:16px">
+      <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true">
+        <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+      </svg>
+      <input id="search" type="search" placeholder="Search courses…" aria-label="Search courses by name or number" />
+    </div>
+
     <div class="sidebar-title">Filter Courses</div>
 
     <div class="filter-group">
@@ -254,6 +261,11 @@
     </div>
 
     <div class="filter-group">
+      <label class="filter-label" for="filterGradCredit">Grad Required Category</label>
+      <select id="filterGradCredit"><option value="">All</option></select>
+    </div>
+
+    <div class="filter-group">
       <label class="filter-label" for="filterOnline">Delivery</label>
       <select id="filterOnline">
         <option value="">Online or In-Person</option>
@@ -263,8 +275,8 @@
     </div>
 
     <div class="filter-group">
-      <label class="filter-label" for="filterDepartment">Department</label>
-      <select id="filterDepartment"><option value="">All Departments</option></select>
+      <label class="filter-label" for="filterContentArea">Content Area</label>
+      <select id="filterContentArea"><option value="">All Content Areas</option></select>
     </div>
 
     <div class="filter-group">
@@ -291,11 +303,6 @@
       </select>
     </div>
 
-    <div class="filter-group">
-      <label class="filter-label" for="filterGradCredit">Core Grad Credit</label>
-      <select id="filterGradCredit"><option value="">All</option></select>
-    </div>
-
     <hr class="sidebar-divider" />
     <button id="clearBtn"><span aria-hidden="true">✕</span> Clear All Filters</button>
   </aside>
@@ -309,12 +316,6 @@
     </div>
 
     <div id="mainContent" style="display:none">
-      <div class="search-wrap">
-        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true">
-          <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
-        </svg>
-        <input id="search" type="search" placeholder="Search by course name or number…" aria-label="Search courses by name or number" />
-      </div>
       <div class="results-bar" aria-live="polite"><strong id="countLabel">0</strong> courses found</div>
       <div class="grid" id="grid"></div>
     </div>
@@ -346,6 +347,7 @@
     number:      "Course #",
     name:        "Course Name",
     department:  "Department",
+    contentArea: "Content Area",
     grade:       "Grade Levels",
     trimesters:  "# Trimesters",
     creditType:  "Credit Type",
@@ -448,11 +450,11 @@
     document.getElementById("mainContent").style.display = "block";
     document.getElementById("sidebar").classList.add("visible");
 
-    populateSelect("filterDepartment", F.department);
+    populateSelect("filterContentArea", F.contentArea);
     populateSelect("filterProgram", F.program);
     populateSelectFromValues("filterGradCredit", ALL_COURSES.map(gradCredit));
 
-    ["search","filterDepartment","filterSchool","filterOnline","filterProgram",
+    ["search","filterContentArea","filterSchool","filterOnline","filterProgram",
      "filterPrereq","filterLength","filterGradCredit"]
       .forEach(id => document.getElementById(id).addEventListener("input", render));
 
@@ -460,7 +462,7 @@
 
     document.getElementById("clearBtn").addEventListener("click", () => {
       document.getElementById("search").value = "";
-      ["filterDepartment","filterSchool","filterOnline","filterProgram",
+      ["filterContentArea","filterSchool","filterOnline","filterProgram",
        "filterPrereq","filterLength","filterGradCredit"]
         .forEach(id => document.getElementById(id).value = "");
       document.querySelectorAll(".gradeCheck").forEach(cb => cb.checked = false);
@@ -524,7 +526,7 @@
   function render() {
     const q          = document.getElementById("search").value.trim().toLowerCase();
     const grades     = [...document.querySelectorAll(".gradeCheck:checked")].map(cb => cb.value);
-    const dept       = document.getElementById("filterDepartment").value;
+    const contentArea = document.getElementById("filterContentArea").value;
     const school     = document.getElementById("filterSchool").value;
     const online     = document.getElementById("filterOnline").value;
     const prog       = document.getElementById("filterProgram").value;
@@ -539,7 +541,7 @@
         const courseGrades = parseGrades(c);
         if (!grades.some(g => courseGrades.has(g))) return false;
       }
-      if (!matches(c, dept, F.department)) return false;
+      if (!matches(c, contentArea, F.contentArea)) return false;
       if (school && schoolStatus(c[school], school) === "no") return false;
       if (online) {
         const anyOnline = SCHOOLS.some(s => schoolStatus(c[s.key], s.key) === "online");
@@ -641,6 +643,7 @@
     }).filter(Boolean).join("");
 
     const details = [
+      ["Content Area",  c[F.contentArea]],
       ["Department",    c[F.department]],
       ["Grade",         c[F.grade]],
       ["Length",        c[F.trimesters]],
