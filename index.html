@@ -189,7 +189,7 @@
   .tag-pill.prereq-required{ background: #fdf0e0; color: #b5670b; border: 1px solid #f3c98a; }
   .tag-pill.prereq-none    { background: #eef6e0; color: #4c7a1c; border: 1px solid #b9d98a; }
   .tag-pill.school-inperson{ background: #eef1f8; color: var(--navy); border: 1px solid var(--border); }
-  .tag-pill.school-online  { background: #e0f2fa; color: #007db3; border: 1px solid #8fcbe6; }
+  .tag-pill.school-online  { background: #eef1f8; color: var(--navy); border: 1px solid var(--border); }
 
   .card h2 { font-family: var(--font-header); font-weight: 700; font-size: 1.3rem; line-height: 1.3; color: var(--navy); }
 
@@ -646,7 +646,7 @@
       ["Content Area",  c[F.contentArea]],
       ["Department",    c[F.department]],
       ["Grade",         c[F.grade]],
-      ["Length",        c[F.trimesters]],
+      ["Number of Trimesters", c[F.trimesters]],
       ["Credit Type",   c[F.creditType]],
       ["Prerequisite",  hasPrereq(c) ? c[F.prereq] : "No Pre-req"],
       ["Program",       c[F.program]],
