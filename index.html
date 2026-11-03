@@ -205,6 +205,7 @@
      are too light for text, so their color is in the tint and border, with dark text.
      Blue text fails on any tint, so the Online pill background stays transparent. */
   .tag-pill.online         { background: transparent;           color: #007db3; border: 1px solid #6bb4d3; } /* 4.58 */
+  .tag-pill.inperson       { background: transparent;           color: #3c0086; border: 1px solid #8e6bb9; } /* 13.67 */
   .tag-pill.core           { background: rgba(248,196,35,.18);  color: #222222; border: 1px solid #f8c423; } /* 14.5 */
   .tag-pill.pathway        { background: rgba(162,37,131,.08);  color: #a22583; border: 1px solid #c980b7; } /* 5.93 */
   .tag-pill.program        { background: rgba(162,37,131,.08);  color: #a22583; border: 1px solid #c980b7; } /* 5.93 */
@@ -296,6 +297,9 @@
         <option value="">Online or In-Person</option>
         <option value="yes">Online Available</option>
         <option value="no">In-Person Available</option>
+        <option value="online-only">Online Only</option>
+        <option value="inperson-only">In-Person Only</option>
+        <option value="both">In-Person &amp; Online</option>
       </select>
     </div>
 
@@ -439,6 +443,8 @@
 
   // NCA is an all-online school: any offering there is online.
   const ALL_ONLINE_SCHOOLS = new Set(["NCA HS"]);
+  // NCA's online courses are open to students at every school.
+  const OPEN_TO_ALL_SCHOOL = "NCA HS";
 
   function schoolStatus(val, schoolKey) {
     const v = (val || "").trim().toLowerCase();
@@ -553,7 +559,11 @@
     const q          = document.getElementById("search").value.trim().toLowerCase();
     const grades     = [...document.querySelectorAll(".gradeCheck:checked")].map(cb => cb.value);
     const contentArea = document.getElementById("filterContentArea").value;
-    const schools    = [...document.querySelectorAll(".schoolCheck:checked")].map(cb => cb.value);
+    const checked    = [...document.querySelectorAll(".schoolCheck:checked")].map(cb => cb.value);
+    // Students at any school can take New Code Academy online courses,
+    // so NCA is always included once a school is checked.
+    const schools    = checked.length && !checked.includes(OPEN_TO_ALL_SCHOOL)
+                       ? [...checked, OPEN_TO_ALL_SCHOOL] : checked;
     const online     = document.getElementById("filterOnline").value;
     const prog       = document.getElementById("filterProgram").value;
     const prereq     = document.getElementById("filterPrereq").value;
@@ -570,10 +580,13 @@
       if (!matches(c, contentArea, F.contentArea)) return false;
       if (schools.length && !schools.some(s => schoolStatus(c[s], s) !== "no")) return false;
       if (online) {
-        const anyOnline = SCHOOLS.some(s => schoolStatus(c[s.key], s.key) === "online");
-        const anyInPerson = SCHOOLS.some(s => schoolStatus(c[s.key], s.key) === "yes");
-        if (online === "yes" && !anyOnline) return false;
-        if (online === "no"  && !anyInPerson) return false;
+        // Checks only the chosen schools (all schools if none are checked).
+        const m = modality(c, schools);
+        if (online === "yes" && !m.online) return false;
+        if (online === "no"  && !m.inPerson) return false;
+        if (online === "online-only"   && !(m.online && !m.inPerson)) return false;
+        if (online === "inperson-only" && !(m.inPerson && !m.online)) return false;
+        if (online === "both" && !(m.online && m.inPerson)) return false;
       }
       if (!matches(c, prog, F.program)) return false;
       if (prereq === "yes" && !hasPrereq(c)) return false;
@@ -598,7 +611,7 @@
     }
 
     grid.innerHTML = filtered.map((c, i) => {
-      const tags = buildPreviewTags(c);
+      const tags = buildPreviewTags(c, schools);
       const subtitleParts = [c[F.number], LENGTH_LABELS[lengthBucket(c)] || ""].filter(Boolean);
 
       return `<div class="card" data-idx="${i}" tabindex="0" role="button" aria-label="View details for ${esc(c[F.name] || "course")}">
@@ -614,15 +627,32 @@
     }).join("");
   }
 
-  function buildPreviewTags(c) {
+  // Delivery modality: which ways a course is offered across the given schools
+  // (school column keys). Empty list = all schools.
+  function modality(c, schoolKeys) {
+    const keys = schoolKeys && schoolKeys.length ? schoolKeys : SCHOOLS.map(s => s.key);
+    const st = keys.map(k => schoolStatus(c[k], k));
+    return { online: st.includes("online"), inPerson: st.includes("yes") };
+  }
+
+  // In-Person pill and/or Online pill. A course offered both ways gets both pills.
+  function deliveryTags(m) {
     const tags = [];
-    const credit = gradCredit(c);
-    // Card shows the Online pill only for online-only courses (every offering school is online).
-    const offered = SCHOOLS.map(s => schoolStatus(c[s.key], s.key)).filter(st => st !== "no");
-    if (offered.length && offered.every(st => st === "online"))
+    if (m.inPerson)
+      tags.push(`<span class="tag-pill inperson">
+        <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 21h18"/><path d="M5 21V9l7-5 7 5v12"/><path d="M10 21v-6h4v6"/></svg>
+        In-Person</span>`);
+    if (m.online)
       tags.push(`<span class="tag-pill online">
         <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
         Online</span>`);
+    return tags;
+  }
+
+  function buildPreviewTags(c, schoolKeys) {
+    const credit = gradCredit(c);
+    // Card delivery pills reflect the checked schools (all schools if none checked).
+    const tags = deliveryTags(modality(c, schoolKeys));
     if (credit)
       tags.push(`<span class="tag-pill core">
         <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>
@@ -643,13 +673,9 @@
   }
 
   function buildFullTags(c) {
-    const tags = [];
-    const anyOnline = SCHOOLS.some(s => schoolStatus(c[s.key], s.key) === "online");
+    // Pop-up delivery pills cover every school; "Offered At" shows which school is which.
+    const tags = deliveryTags(modality(c, []));
     const credit = gradCredit(c);
-    if (anyOnline)
-      tags.push(`<span class="tag-pill online">
-        <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
-        Online</span>`);
     if (credit)
       tags.push(`<span class="tag-pill core">
         <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>
