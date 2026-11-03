@@ -194,7 +194,8 @@
   .modal-delivery-row { margin-bottom: 20px; }
   .modal-detail-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px 20px; border-top: 1px solid var(--border); padding-top: 16px; }
   .modal-detail-item .label { font-size: .72rem; font-weight: 600; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); margin-bottom: 3px; }
-  .modal-detail-item .value { font-size: .9rem; color: var(--text); }
+  .modal-detail-col { display: flex; flex-direction: column; gap: 12px; }
+  .modal-detail-item .value { font-size: .9rem; color: var(--text); white-space: pre-line; }
   @media (max-width: 600px) { .modal-detail-grid { grid-template-columns: 1fr; } }
 
   .subtitle-row { display: flex; align-items: center; flex-wrap: wrap; gap: 6px; margin-top: 3px; font-size: .78rem; font-weight: 500; color: var(--muted); letter-spacing: .02em; }
@@ -311,6 +312,11 @@
     </div>
 
     <div class="filter-group">
+      <label class="filter-label" for="filterCareerCluster">Career Cluster</label>
+      <select id="filterCareerCluster"><option value="">All Career Clusters</option></select>
+    </div>
+
+    <div class="filter-group">
       <label class="filter-label" for="filterProgram">Program</label>
       <select id="filterProgram"><option value="">All Programs</option></select>
     </div>
@@ -385,6 +391,7 @@
     prereq:      "Prerequisites",
     program:     "Program (CC, AVID, DA, BCCA, Internship, AP, Special Education, EL, Nobel)",
     pathways:    "Pathways",
+    careerCluster: "Career Cluster",
     description: "Course Description",
     gradReq:     "Grad Requirement Category"
   };
@@ -474,6 +481,42 @@
     return "";
   }
 
+  // The sheet separates clusters with commas, but some cluster names contain commas
+  // too. These names are matched whole first (spelled with "&" or "and", with or
+  // without the extra commas); whatever is left is split on commas.
+  const COMMA_CLUSTERS = [
+    "Agriculture, Food & Natural Resources",
+    "Arts, Audio/Video Technology & Communications",
+    "Arts, A/V Technology & Communications",
+    "Arts, Communications & Information Systems",
+    "Arts, Entertainment & Design",
+    "Business, Management & Administration",
+    "Engineering, Manufacturing & Technology",
+    "Hospitality, Events & Tourism",
+    "Law, Public Safety, Corrections & Security",
+    "Marketing, Sales & Service",
+    "Science, Technology, Engineering & Mathematics",
+    "Transportation, Distribution & Logistics"
+  ].map(name => new RegExp("\\b" + name.split(/,?\s*&\s*|,\s*/)
+      .map(w => w.replace(/[.*+?^${}()|[\]\\\/]/g, "\\$&").replace(/\s+/g, "\\s+"))
+      .join("\\s*,?\\s*(?:&|and)?\\s*") + "\\b", "i"));
+
+  function careerClusters(c) {
+    let rest = c[F.careerCluster] || "";
+    const found = [];
+    COMMA_CLUSTERS.forEach(re => {
+      const m = rest.match(re);
+      if (m) { found.push({ at: m.index, name: m[0].trim() }); rest = rest.replace(m[0], "\u0000".repeat(m[0].length)); }
+    });
+    let pos = 0;
+    rest.split(/[,;\n]/).forEach(part => {
+      const name = part.replace(/\u0000/g, "").trim();
+      if (name) found.push({ at: pos, name });
+      pos += part.length + 1;
+    });
+    return found.sort((a, b) => a.at - b.at).map(f => f.name);
+  }
+
   function parseGrades(c) {
     return new Set((c[F.grade] || "").match(/\b(9|10|11|12)\b/g) || []);
   }
@@ -487,8 +530,9 @@
     populateSelect("filterContentArea", F.contentArea);
     populateSelect("filterProgram", F.program);
     populateSelectFromValues("filterGradCredit", ALL_COURSES.map(gradCredit));
+    populateSelectFromValues("filterCareerCluster", ALL_COURSES.flatMap(careerClusters));
 
-    ["search","filterContentArea","filterOnline","filterProgram",
+    ["search","filterContentArea","filterCareerCluster","filterOnline","filterProgram",
      "filterPrereq","filterLength","filterGradCredit"]
       .forEach(id => document.getElementById(id).addEventListener("input", render));
 
@@ -496,7 +540,7 @@
 
     document.getElementById("clearBtn").addEventListener("click", () => {
       document.getElementById("search").value = "";
-      ["filterContentArea","filterOnline","filterProgram",
+      ["filterContentArea","filterCareerCluster","filterOnline","filterProgram",
        "filterPrereq","filterLength","filterGradCredit"]
         .forEach(id => document.getElementById(id).value = "");
       document.querySelectorAll(".gradeCheck, .schoolCheck").forEach(cb => cb.checked = false);
@@ -561,6 +605,7 @@
     const q          = document.getElementById("search").value.trim().toLowerCase();
     const grades     = [...document.querySelectorAll(".gradeCheck:checked")].map(cb => cb.value);
     const contentArea = document.getElementById("filterContentArea").value;
+    const cluster    = document.getElementById("filterCareerCluster").value;
     const checked    = [...document.querySelectorAll(".schoolCheck:checked")].map(cb => cb.value);
     // Students at any school can take New Code Academy online courses,
     // so NCA is always included once a school is checked.
@@ -580,6 +625,7 @@
         if (!grades.some(g => courseGrades.has(g))) return false;
       }
       if (!matches(c, contentArea, F.contentArea)) return false;
+      if (cluster && !careerClusters(c).some(v => v.toLowerCase() === cluster.toLowerCase())) return false;
       if (schools.length && !schools.some(s => schoolStatus(c[s], s) !== "no")) return false;
       if (online) {
         // Checks only the chosen schools (all schools if none are checked).
@@ -697,15 +743,21 @@
       return `<span class="tag-pill ${cls}">${esc(s.label)}</span>`;
     }).filter(Boolean).join("");
 
-    const details = [
+    // Two fixed columns in the detail grid (rows hidden if empty).
+    const keep = list => list.filter(([, v]) => v && v.trim() !== "");
+    const detailLeft = keep([
       ["Content Area",  c[F.contentArea]],
       ["Grade",         c[F.grade]],
       ["Number of Trimesters", c[F.trimesters]],
-      ["Credit Type",   c[F.creditType]],
       ["Prerequisite",  hasPrereq(c) ? c[F.prereq] : "No Pre-req"],
-      ["Program",       c[F.program]],
+    ]);
+    const detailRight = keep([
       ["Pathways",      c[F.pathways]],
-    ].filter(([, v]) => v && v.trim() !== "");
+      ["Career Cluster", careerClusters(c).join("\n")],
+    ]);
+    const detailCol = items => `<div class="modal-detail-col">${items.map(([label, value]) =>
+      `<div class="modal-detail-item"><div class="label">${esc(label)}</div><div class="value">${esc(value)}</div></div>`
+    ).join("")}</div>`;
 
     document.getElementById("modalContent").innerHTML = `
       <h2 id="modalTitle">${esc(c[F.name] || "Untitled Course")}</h2>
@@ -713,9 +765,7 @@
       ${tags.length ? `<div class="tag-row">${tags.join("")}</div>` : ""}
       ${c[F.description] ? `<div class="description">${esc(c[F.description])}</div>` : ""}
       ${delivery.length ? `<div class="tag-row modal-delivery-row">${delivery.join("")}</div>` : ""}
-      ${details.length ? `<div class="modal-detail-grid">${details.map(([label, value]) =>
-        `<div class="modal-detail-item"><div class="label">${esc(label)}</div><div class="value">${esc(value)}</div></div>`
-      ).join("")}</div>` : ""}
+      ${detailLeft.length || detailRight.length ? `<div class="modal-detail-grid">${detailCol(detailLeft)}${detailCol(detailRight)}</div>` : ""}
       ${schoolTags ? `<div class="modal-schools-row">
         <div class="modal-section-label">Offered At</div>
         <div class="tag-row">${schoolTags}</div>
