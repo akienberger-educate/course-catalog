@@ -189,7 +189,9 @@
   .modal-box .description { -webkit-line-clamp: unset; overflow: visible; font-size: .95rem; line-height: 1.7; margin: 18px 0; white-space: pre-line; }
   .modal-box .tag-row { margin-bottom: 18px; }
   .modal-section-label { font-size: .72rem; font-weight: 600; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); margin-bottom: 8px; }
-  .modal-schools-row { margin-bottom: 20px; }
+  .modal-schools-row { margin-top: 20px; }
+  .modal-box .modal-schools-row .tag-row { margin-bottom: 0; }
+  .modal-delivery-row { margin-bottom: 20px; }
   .modal-detail-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px 20px; border-top: 1px solid var(--border); padding-top: 16px; }
   .modal-detail-item .label { font-size: .72rem; font-weight: 600; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); margin-bottom: 3px; }
   .modal-detail-item .value { font-size: .9rem; color: var(--text); }
@@ -203,9 +205,9 @@
   /* Pills: brand colors with light, see-through backgrounds. All pass WCAG AA 4.5:1.
      Blue and Magenta are dark enough to be the text color. Gold, Orange and Green
      are too light for text, so their color is in the tint and border, with dark text.
-     Blue text fails on any tint, so the Online pill background stays transparent. */
-  .tag-pill.online         { background: transparent;           color: #007db3; border: 1px solid #6bb4d3; } /* 4.58 */
-  .tag-pill.inperson       { background: transparent;           color: #3c0086; border: 1px solid #8e6bb9; } /* 13.67 */
+     Blue text fails on any tint, so the In-Person pill background stays transparent. */
+  .tag-pill.inperson       { background: transparent;           color: #007db3; border: 1px solid #6bb4d3; } /* 4.58 */
+  .tag-pill.online         { background: transparent;           color: #3c0086; border: 1px solid #8e6bb9; } /* 13.67 */
   .tag-pill.core           { background: rgba(248,196,35,.18);  color: #222222; border: 1px solid #f8c423; } /* 14.5 */
   .tag-pill.pathway        { background: rgba(162,37,131,.08);  color: #a22583; border: 1px solid #c980b7; } /* 5.93 */
   .tag-pill.program        { background: rgba(162,37,131,.08);  color: #a22583; border: 1px solid #c980b7; } /* 5.93 */
@@ -651,8 +653,8 @@
 
   function buildPreviewTags(c, schoolKeys) {
     const credit = gradCredit(c);
-    // Card delivery pills reflect the checked schools (all schools if none checked).
-    const tags = deliveryTags(modality(c, schoolKeys));
+    // Delivery pills are shown only in the pop-up, not on cards.
+    const tags = [];
     if (credit)
       tags.push(`<span class="tag-pill core">
         <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>
@@ -673,8 +675,7 @@
   }
 
   function buildFullTags(c) {
-    // Pop-up delivery pills cover every school; "Offered At" shows which school is which.
-    const tags = deliveryTags(modality(c, []));
+    const tags = [];
     const credit = gradCredit(c);
     if (credit)
       tags.push(`<span class="tag-pill core">
@@ -686,13 +687,14 @@
   function openModal(c) {
     const tags = buildFullTags(c);
     const credit = gradCredit(c);
+    // In-Person / Online pills sit under the description and cover every school.
+    const delivery = deliveryTags(modality(c, []));
 
     const schoolTags = SCHOOLS.map(s => {
       const status = schoolStatus(c[s.key], s.key);
       if (status === "no") return "";
       const cls = status === "online" ? "school-online" : "school-inperson";
-      const suffix = status === "online" ? " (Online)" : " (In-Person)";
-      return `<span class="tag-pill ${cls}">${esc(s.label)}${suffix}</span>`;
+      return `<span class="tag-pill ${cls}">${esc(s.label)}</span>`;
     }).filter(Boolean).join("");
 
     const details = [
@@ -708,15 +710,16 @@
     document.getElementById("modalContent").innerHTML = `
       <h2 id="modalTitle">${esc(c[F.name] || "Untitled Course")}</h2>
       ${c[F.number] ? `<div class="modal-num">${esc(c[F.number])}</div>` : ""}
-      <div class="tag-row">${tags.join("")}</div>
+      ${tags.length ? `<div class="tag-row">${tags.join("")}</div>` : ""}
       ${c[F.description] ? `<div class="description">${esc(c[F.description])}</div>` : ""}
+      ${delivery.length ? `<div class="tag-row modal-delivery-row">${delivery.join("")}</div>` : ""}
+      ${details.length ? `<div class="modal-detail-grid">${details.map(([label, value]) =>
+        `<div class="modal-detail-item"><div class="label">${esc(label)}</div><div class="value">${esc(value)}</div></div>`
+      ).join("")}</div>` : ""}
       ${schoolTags ? `<div class="modal-schools-row">
         <div class="modal-section-label">Offered At</div>
         <div class="tag-row">${schoolTags}</div>
       </div>` : ""}
-      ${details.length ? `<div class="modal-detail-grid">${details.map(([label, value]) =>
-        `<div class="modal-detail-item"><div class="label">${esc(label)}</div><div class="value">${esc(value)}</div></div>`
-      ).join("")}</div>` : ""}
     `;
     document.getElementById("modalOverlay").classList.add("open");
     document.body.style.overflow = "hidden";
