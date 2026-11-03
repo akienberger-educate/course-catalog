@@ -391,7 +391,7 @@
     prereq:      "Prerequisites",
     program:     "Program (CC, AVID, DA, BCCA, Internship, AP, Special Education, EL, Nobel)",
     pathways:    "Pathways",
-    careerCluster: "Career Cluster",
+    careerCluster: "Career Clusters",
     description: "Course Description",
     gradReq:     "Grad Requirement Category"
   };
@@ -530,6 +530,14 @@
     populateSelect("filterContentArea", F.contentArea);
     populateSelect("filterProgram", F.program);
     populateSelectFromValues("filterGradCredit", ALL_COURSES.map(gradCredit));
+    // Find the Career Cluster column even if its header is worded a little differently
+    // ("Career Clusters", "Career Cluster(s)", etc.).
+    const headers = Object.keys(ALL_COURSES[0] || {});
+    if (!headers.includes(F.careerCluster)) {
+      const h = headers.find(k => /career\s*clusters?/i.test(k));
+      if (h) F.careerCluster = h;
+      else console.warn("[Course Catalog] No Career Cluster column found. Headers:", headers);
+    }
     populateSelectFromValues("filterCareerCluster", ALL_COURSES.flatMap(careerClusters));
 
     ["search","filterContentArea","filterCareerCluster","filterOnline","filterProgram",
