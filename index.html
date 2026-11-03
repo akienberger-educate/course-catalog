@@ -9,17 +9,19 @@
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
   :root {
-    --navy:   #1a2744;
-    --blue:   #2f5bea;
+    /* BPS Brand palette (Brand Guidelines p.5). Text neutrals are darker
+       shades of brand Gray #8F8F8F, which itself is too light for text. */
+    --navy:   #222222;
+    --blue:   #007db3;
     --bps-blue: #007db3;
-    --sky:    #e8eeff;
+    --sky:    #bfdeec;
     --white:  #ffffff;
-    --gray:   #f4f5f8;
-    --border: #dde1ec;
-    --text:   #1a2744;
-    --muted:  #5a6382;
+    --gray:   #f2f2f2;
+    --border: #e3e3e3;
+    --text:   #222222;
+    --muted:  #595959;
     --radius: 10px;
-    --shadow: 0 2px 12px rgba(26,39,68,.08);
+    --shadow: 0 2px 12px rgba(34,34,34,.07);
     --font-header: 'Roboto Slab', 'Garamond', serif;
     --font-body: 'Helvetica Neue', Helvetica, Arial, 'Century Gothic', sans-serif;
   }
@@ -30,6 +32,22 @@
   header { background: var(--bps-blue); padding: 24px 32px; }
   header h1 { font-family: var(--font-header); font-weight: 700; font-size: 1.8rem; color: var(--white); letter-spacing: -.3px; }
   header p  { color: #ffffff; margin-top: 4px; font-size: .9rem; }
+
+  /* ── Choose Your School bar ── */
+  .school-bar-wrap { max-width: 1300px; margin: 0 auto; padding: 24px 20px 0; display: none; }
+  .school-bar-wrap.visible { display: block; }
+  .school-bar {
+    background: var(--white); border: 1.5px solid var(--border);
+    border-radius: var(--radius); box-shadow: var(--shadow);
+    padding: 16px 20px; display: flex; align-items: center; flex-wrap: wrap; gap: 12px 28px;
+  }
+  .school-bar legend {
+    float: left; font-family: var(--font-header); font-weight: 700;
+    font-size: 1.15rem; color: var(--bps-blue); padding: 0;
+  }
+  .school-checks { display: flex; flex-wrap: wrap; gap: 10px 24px; }
+  .school-checks label { display: flex; align-items: center; gap: 7px; font-size: .95rem; color: var(--text); cursor: pointer; }
+  .school-checks input[type="checkbox"] { accent-color: var(--blue); cursor: pointer; width: 17px; height: 17px; }
 
   /* ── Layout ── */
   .layout {
@@ -82,7 +100,7 @@
     background: var(--white);
     color: var(--text);
     appearance: none;
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='11' height='11' viewBox='0 0 24 24' fill='none' stroke='%236b7494' stroke-width='2.5'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='11' height='11' viewBox='0 0 24 24' fill='none' stroke='%23595959' stroke-width='2.5'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
     background-repeat: no-repeat;
     background-position: right 9px center;
     cursor: pointer;
@@ -109,7 +127,7 @@
     transition: all .15s;
     text-align: center;
   }
-  #clearBtn:hover { border-color: var(--blue); color: var(--blue); background: var(--sky); }
+  #clearBtn:hover { border-color: var(--blue); color: var(--blue); background: var(--white); }
 
   /* ── Main content ── */
   .main { flex: 1; min-width: 0; }
@@ -139,14 +157,14 @@
     box-shadow: var(--shadow); transition: box-shadow .2s, border-color .2s, transform .15s;
     display: flex; flex-direction: column; gap: 10px;
   }
-  .card:hover { box-shadow: 0 6px 24px rgba(47,91,234,.12); border-color: #c2ccf5; transform: translateY(-2px); }
+  .card:hover { box-shadow: 0 6px 24px rgba(0,125,179,.14); border-color: #8fc6de; transform: translateY(-2px); }
   .card { cursor: pointer; }
   .card:focus-visible { outline: 2.5px solid var(--blue); outline-offset: 2px; }
 
   /* ── Modal ── */
   .modal-overlay {
     display: none; position: fixed; inset: 0; z-index: 100;
-    background: rgba(26,39,68,.55);
+    background: rgba(34,34,34,.55);
     align-items: flex-start; justify-content: center;
     padding: 40px 20px; overflow-y: auto;
   }
@@ -154,20 +172,20 @@
   .modal-box {
     position: relative; background: var(--white); border-radius: 14px;
     max-width: 640px; width: 100%; padding: 32px;
-    box-shadow: 0 20px 60px rgba(26,39,68,.3);
+    box-shadow: 0 20px 60px rgba(34,34,34,.3);
     animation: modalIn .18s ease-out;
   }
   @keyframes modalIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
   .modal-close {
     position: absolute; top: 16px; right: 16px;
     width: 32px; height: 32px; border-radius: 50%; border: none;
-    background: var(--gray); color: var(--muted);
+    background: var(--border); color: var(--text);
     display: flex; align-items: center; justify-content: center;
     cursor: pointer; transition: background .15s, color .15s;
   }
-  .modal-close:hover { background: var(--sky); color: var(--blue); }
+  .modal-close:hover { background: var(--sky); color: var(--text); }
   .modal-num { font-size: .85rem; color: var(--muted); margin-top: 4px; margin-bottom: 4px; }
-  .modal-box h2 { font-family: var(--font-header); font-weight: 700; font-size: 1.6rem; color: var(--navy); padding-right: 30px; line-height: 1.3; }
+  .modal-box h2 { font-family: var(--font-header); font-weight: 700; font-size: 1.6rem; color: var(--bps-blue); padding-right: 30px; line-height: 1.3; }
   .modal-box .description { -webkit-line-clamp: unset; overflow: visible; font-size: .95rem; line-height: 1.7; margin: 18px 0; white-space: pre-line; }
   .modal-box .tag-row { margin-bottom: 18px; }
   .modal-section-label { font-size: .72rem; font-weight: 600; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); margin-bottom: 8px; }
@@ -178,22 +196,26 @@
   @media (max-width: 600px) { .modal-detail-grid { grid-template-columns: 1fr; } }
 
   .subtitle-row { display: flex; align-items: center; flex-wrap: wrap; gap: 6px; margin-top: 3px; font-size: .78rem; font-weight: 500; color: var(--muted); letter-spacing: .02em; }
-  .subtitle-row .sep { color: var(--border); font-weight: 400; }
+  .subtitle-row .sep { color: #bebebe; font-weight: 400; }
 
   .tag-row { display: flex; flex-wrap: wrap; gap: 8px; }
   .tag-pill { display: inline-flex; align-items: center; gap: 5px; font-size: .8rem; font-weight: 600; padding: 5px 11px; border-radius: 8px; white-space: nowrap; }
-  .tag-pill.online         { background: #e0f2fa; color: #007db3; border: 1px solid #8fcbe6; }
-  .tag-pill.core           { background: #fef6da; color: #8a6d00; border: 1px solid #f6dd82; }
-  .tag-pill.pathway        { background: #f5e6f0; color: #a22583; border: 1px solid #d9a8c9; }
-  .tag-pill.program        { background: #f5e6f0; color: #a22583; border: 1px solid #d9a8c9; }
-  .tag-pill.prereq-required{ background: #fdf0e0; color: #b5670b; border: 1px solid #f3c98a; }
-  .tag-pill.prereq-none    { background: #eef6e0; color: #4c7a1c; border: 1px solid #b9d98a; }
-  .tag-pill.school-inperson{ background: #eef1f8; color: var(--navy); border: 1px solid var(--border); }
-  .tag-pill.school-online  { background: #eef1f8; color: var(--navy); border: 1px solid var(--border); }
+  /* Pills: brand colors with light, see-through backgrounds. All pass WCAG AA 4.5:1.
+     Blue and Magenta are dark enough to be the text color. Gold, Orange and Green
+     are too light for text, so their color is in the tint and border, with dark text.
+     Blue text fails on any tint, so the Online pill background stays transparent. */
+  .tag-pill.online         { background: transparent;           color: #007db3; border: 1px solid #6bb4d3; } /* 4.58 */
+  .tag-pill.core           { background: rgba(248,196,35,.18);  color: #222222; border: 1px solid #f8c423; } /* 14.5 */
+  .tag-pill.pathway        { background: rgba(162,37,131,.08);  color: #a22583; border: 1px solid #c980b7; } /* 5.93 */
+  .tag-pill.program        { background: rgba(162,37,131,.08);  color: #a22583; border: 1px solid #c980b7; } /* 5.93 */
+  .tag-pill.prereq-required{ background: rgba(226,129,14,.15);  color: #222222; border: 1px solid #e2810e; } /* 13.7 */
+  .tag-pill.prereq-none    { background: rgba(100,158,37,.15);  color: #222222; border: 1px solid #649e25; } /* 13.6 */
+  .tag-pill.school-inperson{ background: rgba(143,143,143,.15); color: #222222; border: 1px solid #cecece; }
+  .tag-pill.school-online  { background: rgba(143,143,143,.15); color: #222222; border: 1px solid #cecece; }
 
-  .card h2 { font-family: var(--font-header); font-weight: 700; font-size: 1.3rem; line-height: 1.3; color: var(--navy); }
+  .card h2 { font-family: var(--font-header); font-weight: 700; font-size: 1.3rem; line-height: 1.3; color: var(--bps-blue); }
 
-  .description { font-size: .87rem; line-height: 1.6; color: #444c6a; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+  .description { font-size: .87rem; line-height: 1.6; color: #444444; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
 
   .meta-row { display: flex; flex-wrap: wrap; gap: 10px; }
   .meta-item { display: flex; align-items: center; gap: 5px; font-size: .82rem; color: var(--muted); }
@@ -201,7 +223,7 @@
 
   /* Loading */
   .status { text-align: center; padding: 64px 20px; color: var(--muted); font-size: 1rem; width: 100%; }
-  .status.error { color: #c0392b; }
+  .status.error { color: #8a1e1e; }
   .spinner { width: 36px; height: 36px; border: 3px solid var(--border); border-top-color: var(--blue); border-radius: 50%; animation: spin .7s linear infinite; margin: 0 auto 16px; }
   @keyframes spin { to { transform: rotate(360deg); } }
 
@@ -213,6 +235,7 @@
 
   /* ── Mobile: sidebar stacks on top ── */
   @media (max-width: 700px) {
+    .school-bar-wrap { padding: 16px 12px 0; }
     .layout { flex-direction: column; padding: 16px 12px 40px; }
     .sidebar { width: 100%; position: static; }
     .grid { grid-template-columns: 1fr; }
@@ -225,6 +248,19 @@
   <h1>Course Catalog</h1>
   <p>Browse and filter available courses</p>
 </header>
+
+<!-- Choose Your School (top of page) -->
+<div class="school-bar-wrap" id="schoolBarWrap">
+  <fieldset class="school-bar">
+    <legend>Choose Your School</legend>
+    <div class="school-checks">
+      <label><input type="checkbox" class="schoolCheck" value="Kennedy HS" /> Kennedy High School</label>
+      <label><input type="checkbox" class="schoolCheck" value="Jefferson HS" /> Jefferson High School</label>
+      <label><input type="checkbox" class="schoolCheck" value="NCA HS" /> New Code Academy</label>
+      <label><input type="checkbox" class="schoolCheck" value="BCCA" /> BCCA</label>
+    </div>
+  </fieldset>
+</div>
 
 <div class="layout">
 
@@ -247,17 +283,6 @@
         <label><input type="checkbox" class="gradeCheck" value="11" /> 11th</label>
         <label><input type="checkbox" class="gradeCheck" value="12" /> 12th</label>
       </div>
-    </div>
-
-    <div class="filter-group">
-      <label class="filter-label" for="filterSchool">School</label>
-      <select id="filterSchool">
-        <option value="">All Schools</option>
-        <option value="Kennedy HS">Kennedy HS</option>
-        <option value="Jefferson HS">Jefferson HS</option>
-        <option value="NCA HS">NCA HS</option>
-        <option value="BCCA">BCCA</option>
-      </select>
     </div>
 
     <div class="filter-group">
@@ -358,9 +383,9 @@
     gradReq:     "Grad Requirement Category"
   };
   const SCHOOLS = [
-    { key: "Kennedy HS",   label: "Kennedy"   },
-    { key: "Jefferson HS", label: "Jefferson" },
-    { key: "NCA HS",       label: "NCA"       },
+    { key: "Kennedy HS",   label: "Kennedy High School"   },
+    { key: "Jefferson HS", label: "Jefferson High School" },
+    { key: "NCA HS",       label: "New Code Academy"      },
     { key: "BCCA",         label: "BCCA"      }
   ];
 
@@ -449,23 +474,24 @@
     document.getElementById("status").style.display = "none";
     document.getElementById("mainContent").style.display = "block";
     document.getElementById("sidebar").classList.add("visible");
+    document.getElementById("schoolBarWrap").classList.add("visible");
 
     populateSelect("filterContentArea", F.contentArea);
     populateSelect("filterProgram", F.program);
     populateSelectFromValues("filterGradCredit", ALL_COURSES.map(gradCredit));
 
-    ["search","filterContentArea","filterSchool","filterOnline","filterProgram",
+    ["search","filterContentArea","filterOnline","filterProgram",
      "filterPrereq","filterLength","filterGradCredit"]
       .forEach(id => document.getElementById(id).addEventListener("input", render));
 
-    document.querySelectorAll(".gradeCheck").forEach(cb => cb.addEventListener("change", render));
+    document.querySelectorAll(".gradeCheck, .schoolCheck").forEach(cb => cb.addEventListener("change", render));
 
     document.getElementById("clearBtn").addEventListener("click", () => {
       document.getElementById("search").value = "";
-      ["filterContentArea","filterSchool","filterOnline","filterProgram",
+      ["filterContentArea","filterOnline","filterProgram",
        "filterPrereq","filterLength","filterGradCredit"]
         .forEach(id => document.getElementById(id).value = "");
-      document.querySelectorAll(".gradeCheck").forEach(cb => cb.checked = false);
+      document.querySelectorAll(".gradeCheck, .schoolCheck").forEach(cb => cb.checked = false);
       render();
     });
 
@@ -527,7 +553,7 @@
     const q          = document.getElementById("search").value.trim().toLowerCase();
     const grades     = [...document.querySelectorAll(".gradeCheck:checked")].map(cb => cb.value);
     const contentArea = document.getElementById("filterContentArea").value;
-    const school     = document.getElementById("filterSchool").value;
+    const schools    = [...document.querySelectorAll(".schoolCheck:checked")].map(cb => cb.value);
     const online     = document.getElementById("filterOnline").value;
     const prog       = document.getElementById("filterProgram").value;
     const prereq     = document.getElementById("filterPrereq").value;
@@ -542,7 +568,7 @@
         if (!grades.some(g => courseGrades.has(g))) return false;
       }
       if (!matches(c, contentArea, F.contentArea)) return false;
-      if (school && schoolStatus(c[school], school) === "no") return false;
+      if (schools.length && !schools.some(s => schoolStatus(c[s], s) !== "no")) return false;
       if (online) {
         const anyOnline = SCHOOLS.some(s => schoolStatus(c[s.key], s.key) === "online");
         const anyInPerson = SCHOOLS.some(s => schoolStatus(c[s.key], s.key) === "yes");
@@ -590,9 +616,10 @@
 
   function buildPreviewTags(c) {
     const tags = [];
-    const anyOnline = SCHOOLS.some(s => schoolStatus(c[s.key], s.key) === "online");
     const credit = gradCredit(c);
-    if (anyOnline)
+    // Card shows the Online pill only for online-only courses (every offering school is online).
+    const offered = SCHOOLS.map(s => schoolStatus(c[s.key], s.key)).filter(st => st !== "no");
+    if (offered.length && offered.every(st => st === "online"))
       tags.push(`<span class="tag-pill online">
         <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
         Online</span>`);
@@ -644,7 +671,6 @@
 
     const details = [
       ["Content Area",  c[F.contentArea]],
-      ["Department",    c[F.department]],
       ["Grade",         c[F.grade]],
       ["Number of Trimesters", c[F.trimesters]],
       ["Credit Type",   c[F.creditType]],
