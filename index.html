@@ -191,11 +191,23 @@
   .modal-section-label { font-size: .72rem; font-weight: 600; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); margin-bottom: 8px; }
   .modal-schools-row { margin-top: 20px; }
   .modal-box .modal-schools-row .tag-row { margin-bottom: 0; }
-  .modal-delivery-row { margin-bottom: 20px; }
   .modal-detail-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px 20px; border-top: 1px solid var(--border); padding-top: 16px; }
   .modal-detail-item .label { font-size: .72rem; font-weight: 600; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); margin-bottom: 3px; }
   .modal-detail-col { display: flex; flex-direction: column; gap: 12px; }
   .modal-detail-item .value { font-size: .9rem; color: var(--text); white-space: pre-line; }
+  /* Registration Info: the course numbers to register with, per delivery option */
+  .modal-reg { margin-top: 20px; border-top: 1px solid var(--border); padding-top: 16px; }
+  .modal-reg-list { display: flex; flex-direction: column; gap: 8px; }
+  .modal-reg-row { display: flex; align-items: center; gap: 8px 14px; flex-wrap: wrap; padding: 10px 12px; background: var(--white); border: 1px solid var(--border); border-left-width: 4px; border-radius: 8px; }
+  .modal-reg-row.inperson { border-left-color: #6bb4d3; }
+  .modal-reg-row.online   { border-left-color: #8e6bb9; }
+  .reg-label { font-weight: 700; font-size: .85rem; min-width: 84px; }
+  .modal-reg-row.inperson .reg-label { color: #007db3; } /* 4.58 on white */
+  .modal-reg-row.online   .reg-label { color: #3c0086; } /* 13.67 */
+  .reg-codes { font-size: .95rem; font-weight: 600; color: #222222; letter-spacing: .02em; }
+  .reg-copy { margin-left: auto; font-family: inherit; font-size: .78rem; color: #595959; background: var(--white); border: 1px solid #cecece; border-radius: 6px; padding: 4px 10px; cursor: pointer; transition: border-color .15s, color .15s; }
+  .reg-copy:hover { border-color: var(--blue); color: var(--blue); }
+  .reg-copy:focus-visible { outline: 2.5px solid var(--blue); outline-offset: 2px; }
   @media (max-width: 600px) { .modal-detail-grid { grid-template-columns: 1fr; } }
 
   .subtitle-row { display: flex; align-items: center; flex-wrap: wrap; gap: 6px; margin-top: 3px; font-size: .78rem; font-weight: 500; color: var(--muted); letter-spacing: .02em; }
@@ -560,6 +572,14 @@
     });
 
     document.getElementById("modalClose").addEventListener("click", closeModal);
+    document.getElementById("modalContent").addEventListener("click", e => {
+      const btn = e.target.closest(".reg-copy");
+      if (!btn) return;
+      copyText(btn.dataset.copy)
+        .then(() => { btn.textContent = "Copied!"; })
+        .catch(() => { btn.textContent = "Select & copy"; })
+        .finally(() => setTimeout(() => { btn.textContent = "Copy"; }, 1800));
+    });
     document.getElementById("modalOverlay").addEventListener("click", e => {
       if (e.target.id === "modalOverlay") closeModal();
     });
@@ -719,11 +739,53 @@
     return tags;
   }
 
+  // Registration numbers: 2-trimester courses add A, B; full-year courses add A, B, C;
+  // online sections add W at the end. 1-trimester courses use the plain number.
+  function regCodes(c, online) {
+    const base = (c[F.number] || "").trim();
+    if (!base) return [];
+    const parts = { "2": ["A","B"], "full": ["A","B","C"] }[lengthBucket(c)] || [""];
+    return parts.map(p => base + p + (online ? "W" : ""));
+  }
+
+  function registrationInfo(c, m) {
+    const row = (online, cls, label) => {
+      const codes = regCodes(c, online).join(", ");
+      return `<div class="modal-reg-row ${cls}">
+        <span class="reg-label">${label}</span>
+        <span class="reg-codes">${esc(codes)}</span>
+        <button type="button" class="reg-copy" data-copy="${esc(codes)}" aria-label="Copy ${label} course numbers">Copy</button>
+      </div>`;
+    };
+    if (!(c[F.number] || "").trim() || !(m.inPerson || m.online)) return "";
+    return `<div class="modal-reg">
+      <div class="modal-section-label">Registration Info</div>
+      <div class="modal-reg-list">
+        ${m.inPerson ? row(false, "inperson", "In-Person") : ""}
+        ${m.online   ? row(true,  "online",   "Online")    : ""}
+      </div>
+    </div>`;
+  }
+
+  // Copy button in Registration Info. Falls back to a hidden textarea when the
+  // Clipboard API is blocked (e.g. inside the Google Sites embed).
+  function copyText(text) {
+    if (navigator.clipboard && window.isSecureContext)
+      return navigator.clipboard.writeText(text).catch(() => fallbackCopy(text));
+    return Promise.resolve(fallbackCopy(text));
+  }
+  function fallbackCopy(text) {
+    const ta = document.createElement("textarea");
+    ta.value = text; ta.setAttribute("readonly", ""); ta.style.position = "fixed"; ta.style.opacity = "0";
+    document.body.appendChild(ta); ta.select();
+    const ok = document.execCommand("copy");
+    document.body.removeChild(ta);
+    if (!ok) throw new Error("copy failed");
+  }
+
   function openModal(c) {
     const tags = buildFullTags(c);
     const credit = gradCredit(c);
-    // In-Person / Online pills sit under the description and cover every school.
-    const delivery = deliveryTags(modality(c, []));
 
     const schoolTags = SCHOOLS.map(s => {
       const status = schoolStatus(c[s.key], s.key);
@@ -735,7 +797,6 @@
     // Two fixed columns in the detail grid (rows hidden if empty).
     const keep = list => list.filter(([, v]) => v && v.trim() !== "");
     const detailLeft = keep([
-      ["Content Area",  c[F.contentArea]],
       ["Grade",         c[F.grade]],
       ["Number of Trimesters", c[F.trimesters]],
       ["Prerequisite",  hasPrereq(c) ? c[F.prereq] : ""],
@@ -753,8 +814,8 @@
       ${c[F.number] ? `<div class="modal-num">${esc(c[F.number])}</div>` : ""}
       ${tags.length ? `<div class="tag-row">${tags.join("")}</div>` : ""}
       ${c[F.description] ? `<div class="description">${esc(c[F.description])}</div>` : ""}
-      ${delivery.length ? `<div class="tag-row modal-delivery-row">${delivery.join("")}</div>` : ""}
       ${detailLeft.length || detailRight.length ? `<div class="modal-detail-grid">${detailCol(detailLeft)}${detailCol(detailRight)}</div>` : ""}
+      ${registrationInfo(c, modality(c, []))}
       ${schoolTags ? `<div class="modal-schools-row">
         <div class="modal-section-label">Offered At</div>
         <div class="tag-row">${schoolTags}</div>
