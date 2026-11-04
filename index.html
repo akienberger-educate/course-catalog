@@ -213,7 +213,6 @@
   .tag-pill.pathway        { background: rgba(162,37,131,.08);  color: #a22583; border: 1px solid #c980b7; } /* 5.93 */
   .tag-pill.program        { background: rgba(162,37,131,.08);  color: #a22583; border: 1px solid #c980b7; } /* 5.93 */
   .tag-pill.prereq-required{ background: rgba(226,129,14,.15);  color: #222222; border: 1px solid #e2810e; } /* 13.7 */
-  .tag-pill.prereq-none    { background: rgba(100,158,37,.15);  color: #222222; border: 1px solid #649e25; } /* 13.6 */
   .tag-pill.school-inperson{ background: rgba(143,143,143,.15); color: #222222; border: 1px solid #cecece; }
   .tag-pill.school-online  { background: rgba(143,143,143,.15); color: #222222; border: 1px solid #cecece; }
 
@@ -721,10 +720,6 @@
       tags.push(`<span class="tag-pill prereq-required">
         <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
         Prerequisite</span>`);
-    else
-      tags.push(`<span class="tag-pill prereq-none">
-        <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>
-        No Pre-req</span>`);
     return tags;
   }
 
@@ -757,7 +752,7 @@
       ["Content Area",  c[F.contentArea]],
       ["Grade",         c[F.grade]],
       ["Number of Trimesters", c[F.trimesters]],
-      ["Prerequisite",  hasPrereq(c) ? c[F.prereq] : "No Pre-req"],
+      ["Prerequisite",  hasPrereq(c) ? c[F.prereq] : ""],
     ]);
     const detailRight = keep([
       ["Pathways",      c[F.pathways]],
