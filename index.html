@@ -294,20 +294,11 @@
     </div>
 
     <div class="filter-group">
-      <label class="filter-label" for="filterOnline">Delivery</label>
-      <select id="filterOnline">
-        <option value="">Online or In-Person</option>
-        <option value="yes">Online Available</option>
-        <option value="no">In-Person Available</option>
-        <option value="online-only">Online Only</option>
-        <option value="inperson-only">In-Person Only</option>
-        <option value="both">In-Person &amp; Online</option>
-      </select>
-    </div>
-
-    <div class="filter-group">
-      <label class="filter-label" for="filterContentArea">Content Area</label>
-      <select id="filterContentArea"><option value="">All Content Areas</option></select>
+      <label class="filter-label">Delivery</label>
+      <div class="grade-checks">
+        <label><input type="checkbox" class="deliveryCheck" value="inperson" /> In-Person</label>
+        <label><input type="checkbox" class="deliveryCheck" value="online" /> Online</label>
+      </div>
     </div>
 
     <div class="filter-group">
@@ -526,7 +517,6 @@
     document.getElementById("sidebar").classList.add("visible");
     document.getElementById("schoolBarWrap").classList.add("visible");
 
-    populateSelect("filterContentArea", F.contentArea);
     populateSelect("filterProgram", F.program);
     populateSelectFromValues("filterGradCredit", ALL_COURSES.map(gradCredit));
     // Find the Career Cluster column even if its header is worded a little differently
@@ -539,18 +529,18 @@
     }
     populateSelectFromValues("filterCareerCluster", ALL_COURSES.flatMap(careerClusters));
 
-    ["search","filterContentArea","filterCareerCluster","filterOnline","filterProgram",
+    ["search","filterCareerCluster","filterProgram",
      "filterPrereq","filterLength","filterGradCredit"]
       .forEach(id => document.getElementById(id).addEventListener("input", render));
 
-    document.querySelectorAll(".gradeCheck, .schoolCheck").forEach(cb => cb.addEventListener("change", render));
+    document.querySelectorAll(".gradeCheck, .schoolCheck, .deliveryCheck").forEach(cb => cb.addEventListener("change", render));
 
     document.getElementById("clearBtn").addEventListener("click", () => {
       document.getElementById("search").value = "";
-      ["filterContentArea","filterCareerCluster","filterOnline","filterProgram",
+      ["filterCareerCluster","filterProgram",
        "filterPrereq","filterLength","filterGradCredit"]
         .forEach(id => document.getElementById(id).value = "");
-      document.querySelectorAll(".gradeCheck, .schoolCheck").forEach(cb => cb.checked = false);
+      document.querySelectorAll(".gradeCheck, .schoolCheck, .deliveryCheck").forEach(cb => cb.checked = false);
       render();
     });
 
@@ -611,14 +601,13 @@
   function render() {
     const q          = document.getElementById("search").value.trim().toLowerCase();
     const grades     = [...document.querySelectorAll(".gradeCheck:checked")].map(cb => cb.value);
-    const contentArea = document.getElementById("filterContentArea").value;
     const cluster    = document.getElementById("filterCareerCluster").value;
     const checked    = [...document.querySelectorAll(".schoolCheck:checked")].map(cb => cb.value);
     // Students at any school can take New Code Academy online courses,
     // so NCA is always included once a school is checked.
     const schools    = checked.length && !checked.includes(OPEN_TO_ALL_SCHOOL)
                        ? [...checked, OPEN_TO_ALL_SCHOOL] : checked;
-    const online     = document.getElementById("filterOnline").value;
+    const delivery   = [...document.querySelectorAll(".deliveryCheck:checked")].map(cb => cb.value);
     const prog       = document.getElementById("filterProgram").value;
     const prereq     = document.getElementById("filterPrereq").value;
     const length     = document.getElementById("filterLength").value;
@@ -631,17 +620,14 @@
         const courseGrades = parseGrades(c);
         if (!grades.some(g => courseGrades.has(g))) return false;
       }
-      if (!matches(c, contentArea, F.contentArea)) return false;
       if (cluster && !careerClusters(c).some(v => v.toLowerCase() === cluster.toLowerCase())) return false;
       if (schools.length && !schools.some(s => schoolStatus(c[s], s) !== "no")) return false;
-      if (online) {
+      if (delivery.length) {
         // Checks only the chosen schools (all schools if none are checked).
+        // A course matches if it's offered in any of the checked ways.
         const m = modality(c, schools);
-        if (online === "yes" && !m.online) return false;
-        if (online === "no"  && !m.inPerson) return false;
-        if (online === "online-only"   && !(m.online && !m.inPerson)) return false;
-        if (online === "inperson-only" && !(m.inPerson && !m.online)) return false;
-        if (online === "both" && !(m.online && m.inPerson)) return false;
+        if (!((delivery.includes("online") && m.online) ||
+              (delivery.includes("inperson") && m.inPerson))) return false;
       }
       if (!matches(c, prog, F.program)) return false;
       if (prereq === "yes" && !hasPrereq(c)) return false;
