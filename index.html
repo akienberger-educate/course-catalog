@@ -287,7 +287,7 @@
       <label><input type="checkbox" class="schoolCheck" value="Kennedy HS" /><span class="check-badge" aria-hidden="true"></span><img src="logo-kennedy.png" alt="Kennedy High School" /></label>
       <label><input type="checkbox" class="schoolCheck" value="Jefferson HS" /><span class="check-badge" aria-hidden="true"></span><img src="logo-jefferson.png" alt="Jefferson High School" /></label>
       <label><input type="checkbox" class="schoolCheck" value="NCA HS" /><span class="check-badge" aria-hidden="true"></span><img src="logo-nca.png" alt="New Code Academy" /></label>
-      <label><input type="checkbox" class="schoolCheck" value="BCCA" /><span class="check-badge" aria-hidden="true"></span><img src="logo-bcca.png" alt="BCCA" /></label>
+      <label><input type="checkbox" class="schoolCheck" value="BCCA" /><span class="check-badge" aria-hidden="true"></span><img src="logo-bcca.png" alt="Career &amp; College Academy" /></label>
     </div>
   </fieldset>
 </div>
@@ -394,10 +394,10 @@
   // renaming the tab doesn't break it. To add a tab, add one line here.
   const SHEET_TABS = [
     { label: "BPS Courses",     sheet: "BPS Courses" },
-    // cardCredit: the Credit pill on this tab's cards shows just this text. The
-    // Grad Requirement Category value is shown in the pop-up only and is left out
-    // of the Grad Required Category filter.
-    { label: "BCCA Courses-AM", gid: "1040031244", cardCredit: "College Credit" }
+    // creditInPopupOnly: no Credit pill on this tab's cards; the Grad Requirement
+    // Category value is shown in the pop-up only and is left out of the Grad
+    // Required Category filter.
+    { label: "BCCA Courses-AM", gid: "1040031244", creditInPopupOnly: true }
   ];
   const tabURL = t => `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&` +
     (t.gid ? `gid=${t.gid}` : `sheet=${encodeURIComponent(t.sheet)}`);
@@ -425,7 +425,7 @@
     { key: "Kennedy HS",   label: "Kennedy High School"   },
     { key: "Jefferson HS", label: "Jefferson High School" },
     { key: "NCA HS",       label: "New Code Academy"      },
-    { key: "BCCA",         label: "BCCA"      }
+    { key: "BCCA",         label: "Career & College Academy" }
   ];
 
   async function fetchTab(t) {
@@ -501,17 +501,26 @@
     return (c[F.gradReq] || "").trim();
   }
 
-  // Text for the card's Credit pill, or a tab's fixed label (BCCA: "College Credit").
-  function cardCreditLabel(c) {
-    if (c.__tab && c.__tab.cardCredit) return c.__tab.cardCredit;
-    const credit = gradCredit(c);
-    return credit ? `Credit: ${credit}` : "";
+  // Credit category for the card pill and the Grad Required Category filter.
+  // Tabs marked creditInPopupOnly (BCCA) return "" so they get neither.
+  function filterCredit(c) {
+    return c.__tab && c.__tab.creditInPopupOnly ? "" : gradCredit(c);
   }
 
-  // Category used by the Grad Required Category filter. Tabs with a fixed
-  // card label (BCCA) are left out of it.
-  function filterCredit(c) {
-    return c.__tab && c.__tab.cardCredit ? "" : gradCredit(c);
+  // Programs, split on commas. All "College Credit Option: …" values become one
+  // program, "College Credit Option"; the part after the colon (Articulated
+  // Credit, Concurrent Enrollment, or both) is shown in the pop-up.
+  const CCO = "College Credit Option";
+  const isCCO = v => v.toLowerCase().startsWith(CCO.toLowerCase());
+  function programParts(c) {
+    return (c[F.program] || "").split(",").map(v => v.trim()).filter(Boolean);
+  }
+  function programs(c) {
+    return [...new Set(programParts(c).map(v => isCCO(v) ? CCO : v))];
+  }
+  function collegeCreditDetail(c) {
+    return [...new Set(programParts(c).filter(isCCO)
+      .map(v => v.slice(CCO.length).replace(/^\s*[:\-–]\s*/, "").trim()).filter(Boolean))].join("\n");
   }
 
   // NCA is an all-online school: any offering there is online.
@@ -591,7 +600,7 @@
     document.getElementById("sidebar").classList.add("visible");
     document.getElementById("schoolBarWrap").classList.add("visible");
 
-    populateSelect("filterProgram", F.program);
+    populateSelectFromValues("filterProgram", ALL_COURSES.flatMap(programs));
     populateSelectFromValues("filterGradCredit", ALL_COURSES.map(filterCredit));
     // Find the Career Cluster column even if its header is worded a little differently
     // ("Career Clusters", "Career Cluster(s)", etc.).
@@ -711,7 +720,7 @@
         if (!((delivery.includes("online") && m.online) ||
               (delivery.includes("inperson") && m.inPerson))) return false;
       }
-      if (!matches(c, prog, F.program)) return false;
+      if (prog && !programs(c).some(v => v.toLowerCase() === prog.toLowerCase())) return false;
       if (prereq === "yes" && !hasPrereq(c)) return false;
       if (prereq === "no"  &&  hasPrereq(c)) return false;
       if (length && lengthBucket(c) !== length) return false;
@@ -773,17 +782,18 @@
   }
 
   function buildPreviewTags(c, schoolKeys) {
-    const credit = cardCreditLabel(c);
+    const credit = filterCredit(c);
     // Delivery pills are shown only in the pop-up, not on cards.
     const tags = [];
     if (credit)
       tags.push(`<span class="tag-pill core">
         <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>
-        ${esc(credit)}</span>`);
-    if (c[F.program])
+        Credit: ${esc(credit)}</span>`);
+    // One Program pill per program, so long combinations don't run off the card.
+    programs(c).forEach(p =>
       tags.push(`<span class="tag-pill program">
         <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
-        ${esc(c[F.program])}</span>`);
+        ${esc(p)}</span>`));
     if (hasPrereq(c))
       tags.push(`<span class="tag-pill prereq-required">
         <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
@@ -862,6 +872,7 @@
       ["Grade",         c[F.grade]],
       ["Number of Trimesters", c[F.trimesters]],
       ["Prerequisite",  hasPrereq(c) ? c[F.prereq] : ""],
+      ["College Credit", collegeCreditDetail(c)],
     ]);
     const detailRight = keep([
       ["Pathways",      c[F.pathways]],
