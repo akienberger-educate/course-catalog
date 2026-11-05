@@ -45,15 +45,20 @@
     float: left; font-family: var(--font-header); font-weight: 700;
     font-size: 1.15rem; color: var(--bps-blue); padding: 0;
   }
-  .school-checks { display: flex; flex-wrap: wrap; gap: 12px 16px; }
-  /* School logo tiles: whole tile is the checkbox label. Logos are shown unaltered
-     (padding trimmed, scaled proportionally) per the brand guide. */
-  .school-checks label { display: flex; align-items: center; gap: 10px; height: 84px; padding: 0 16px 0 12px; background: var(--white); border: 1.5px solid var(--border); border-radius: 8px; cursor: pointer; transition: border-color .15s, box-shadow .15s; }
+  /* School logo grid (option D, Nov 5): four equal tiles, logo only, check badge
+     in the corner. The real checkbox is visually hidden but still keyboard- and
+     screen-reader-accessible; the logo's alt text names the school. Logos are
+     shown unaltered (padding trimmed, scaled proportionally) per the brand guide. */
+  .school-checks { flex: 1 1 100%; display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
+  .school-checks label { position: relative; display: flex; align-items: center; justify-content: center; height: 100px; padding: 10px 34px; background: var(--white); border: 1.5px solid var(--border); border-radius: var(--radius); cursor: pointer; transition: border-color .15s, box-shadow .15s, background .15s; }
   .school-checks label:hover { border-color: #8fc6de; }
   .school-checks label:has(input:checked) { border-color: var(--blue); box-shadow: 0 0 0 1.5px var(--blue); background: rgba(191,222,236,.3); }
   .school-checks label:has(input:focus-visible) { outline: 2.5px solid var(--blue); outline-offset: 2px; }
-  .school-checks img { display: block; height: 60px; width: auto; max-width: 200px; object-fit: contain; }
-  .school-checks input[type="checkbox"] { accent-color: var(--blue); cursor: pointer; width: 17px; height: 17px; flex-shrink: 0; }
+  .school-checks img { display: block; max-height: 64px; max-width: 100%; width: auto; height: auto; object-fit: contain; }
+  .school-checks input[type="checkbox"] { position: absolute; opacity: 0; width: 1px; height: 1px; margin: 0; }
+  .school-checks .check-badge { position: absolute; top: 8px; right: 8px; width: 22px; height: 22px; border-radius: 50%; border: 1.5px solid #cecece; background: var(--white); display: flex; align-items: center; justify-content: center; }
+  .school-checks input:checked + .check-badge { background: var(--blue); border-color: var(--blue); }
+  .school-checks input:checked + .check-badge::after { content: ""; width: 6px; height: 11px; border: solid var(--white); border-width: 0 2.5px 2.5px 0; transform: translate(0, -1px) rotate(45deg); }
 
   /* ── Layout ── */
   .layout {
@@ -257,8 +262,10 @@
   /* ── Mobile: sidebar stacks on top ── */
   @media (max-width: 700px) {
     .school-bar-wrap { padding: 16px 12px 0; }
-    .school-checks label { height: 64px; padding: 0 12px 0 10px; }
-    .school-checks img { height: 44px; max-width: 130px; }
+    .school-checks { grid-template-columns: 1fr 1fr; }
+    .school-checks label { height: 84px; padding: 10px 30px; }
+    .school-checks img { max-height: 50px; }
+    .school-checks .check-badge { top: 6px; right: 6px; width: 20px; height: 20px; }
     .layout { flex-direction: column; padding: 16px 12px 40px; }
     .sidebar { width: 100%; position: static; }
     .grid { grid-template-columns: 1fr; }
@@ -277,10 +284,10 @@
   <fieldset class="school-bar">
     <legend>Choose Your School</legend>
     <div class="school-checks">
-      <label><input type="checkbox" class="schoolCheck" value="Kennedy HS" /> <img src="logo-kennedy.png" alt="Kennedy High School" /></label>
-      <label><input type="checkbox" class="schoolCheck" value="Jefferson HS" /> <img src="logo-jefferson.png" alt="Jefferson High School" /></label>
-      <label><input type="checkbox" class="schoolCheck" value="NCA HS" /> <img src="logo-nca.png" alt="New Code Academy" /></label>
-      <label><input type="checkbox" class="schoolCheck" value="BCCA" /> <img src="logo-bcca.png" alt="BCCA" /></label>
+      <label><input type="checkbox" class="schoolCheck" value="Kennedy HS" /><span class="check-badge" aria-hidden="true"></span><img src="logo-kennedy.png" alt="Kennedy High School" /></label>
+      <label><input type="checkbox" class="schoolCheck" value="Jefferson HS" /><span class="check-badge" aria-hidden="true"></span><img src="logo-jefferson.png" alt="Jefferson High School" /></label>
+      <label><input type="checkbox" class="schoolCheck" value="NCA HS" /><span class="check-badge" aria-hidden="true"></span><img src="logo-nca.png" alt="New Code Academy" /></label>
+      <label><input type="checkbox" class="schoolCheck" value="BCCA" /><span class="check-badge" aria-hidden="true"></span><img src="logo-bcca.png" alt="BCCA" /></label>
     </div>
   </fieldset>
 </div>
