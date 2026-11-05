@@ -389,9 +389,18 @@
 
 <script>
   const SHEET_ID  = "1ryG2ybWJA2y_L18OPKvRPkxR9w_yEfNIeGA_kYY3oKE";
-  const SHEET_TAB = "BPS Courses";
-
-  const CSV_URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(SHEET_TAB)}`;
+  // Sheet tabs to load. The first is required; the others are added if they load.
+  // Extra tabs are read by gid (the number after "gid=" in the tab's URL), so
+  // renaming the tab doesn't break it. To add a tab, add one line here.
+  const SHEET_TABS = [
+    { label: "BPS Courses",     sheet: "BPS Courses" },
+    // cardCredit: the Credit pill on this tab's cards shows just this text. The
+    // Grad Requirement Category value is shown in the pop-up only and is left out
+    // of the Grad Required Category filter.
+    { label: "BCCA Courses-AM", gid: "1040031244", cardCredit: "College Credit" }
+  ];
+  const tabURL = t => `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&` +
+    (t.gid ? `gid=${t.gid}` : `sheet=${encodeURIComponent(t.sheet)}`);
   let ALL_COURSES = [];
   let CURRENT_FILTERED = [];
   let LAST_FOCUSED = null;
@@ -419,18 +428,40 @@
     { key: "BCCA",         label: "BCCA"      }
   ];
 
+  async function fetchTab(t) {
+    const timeout = new Promise((_, reject) =>
+      setTimeout(() => reject(new Error('Request timed out — check that the Google Sheet is set to "Anyone with the link can view"')), 10000)
+    );
+    const res = await Promise.race([fetch(tabURL(t)), timeout]);
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    const text = await res.text();
+    if (text.trim().startsWith('<')) {
+      throw new Error('Sheet is not publicly accessible. Set sharing to "Anyone with the link can view".');
+    }
+    return parseCSV(text);
+  }
+
   async function loadData() {
     try {
-      const timeout = new Promise((_, reject) =>
-        setTimeout(() => reject(new Error('Request timed out — check that the Google Sheet is set to "Anyone with the link can view"')), 10000)
-      );
-      const res = await Promise.race([fetch(CSV_URL), timeout]);
-      if (!res.ok) throw new Error(`HTTP ${res.status}`);
-      const text = await res.text();
-      if (text.trim().startsWith('<')) {
-        throw new Error('Sheet is not publicly accessible. Set sharing to "Anyone with the link can view".');
-      }
-      ALL_COURSES = parseCSV(text);
+      const [main, ...extras] = await Promise.allSettled(SHEET_TABS.map(fetchTab));
+      if (main.status === "rejected") throw main.reason;
+      ALL_COURSES = main.value;
+      // An extra tab that fails to load is skipped, so the main catalog still shows.
+      extras.forEach((r, i) => {
+        if (r.status === "fulfilled") {
+          r.value.forEach(c => { c.__tab = SHEET_TABS[i + 1]; });
+          ALL_COURSES = ALL_COURSES.concat(r.value);
+        }
+        else console.warn(`[Course Catalog] Could not load tab "${SHEET_TABS[i + 1].label}":`, r.reason);
+      });
+      // Drop exact repeats (same Course # and Course Name) listed on more than one tab.
+      const seen = new Set();
+      ALL_COURSES = ALL_COURSES.filter(c => {
+        const key = [c[F.number], c[F.name]].map(s => (s || "").replace(/\s+/g, " ").trim().toLowerCase()).join("|");
+        if (key === "|") return true;
+        if (seen.has(key)) return false;
+        seen.add(key); return true;
+      });
       init();
     } catch (err) {
       document.getElementById("status").innerHTML =
@@ -455,7 +486,10 @@
     if (cur || cells.length) { cells.push(cur); rows.push(cells); }
     if (rows.length < 2) return [];
     // Normalize headers: collapse internal newlines/whitespace into a single clean string.
-    const headers = rows[0].map(h => h.replace(/\s+/g, " ").trim());
+    // Tabs word the Career Clusters header differently (e.g. "Career Clusters
+    // (Potential Resource Link)" on BCCA Courses-AM), so all map to one name.
+    const headers = rows[0].map(h => h.replace(/\s+/g, " ").trim())
+      .map(h => /^career\s*clusters?\b/i.test(h) ? F.careerCluster : h);
     return rows.slice(1).map(row => {
       const obj = {};
       headers.forEach((h, i) => { if (h) obj[h] = (row[i] || "").trim(); });
@@ -465,6 +499,19 @@
 
   function gradCredit(c) {
     return (c[F.gradReq] || "").trim();
+  }
+
+  // Text for the card's Credit pill, or a tab's fixed label (BCCA: "College Credit").
+  function cardCreditLabel(c) {
+    if (c.__tab && c.__tab.cardCredit) return c.__tab.cardCredit;
+    const credit = gradCredit(c);
+    return credit ? `Credit: ${credit}` : "";
+  }
+
+  // Category used by the Grad Required Category filter. Tabs with a fixed
+  // card label (BCCA) are left out of it.
+  function filterCredit(c) {
+    return c.__tab && c.__tab.cardCredit ? "" : gradCredit(c);
   }
 
   // NCA is an all-online school: any offering there is online.
@@ -545,7 +592,7 @@
     document.getElementById("schoolBarWrap").classList.add("visible");
 
     populateSelect("filterProgram", F.program);
-    populateSelectFromValues("filterGradCredit", ALL_COURSES.map(gradCredit));
+    populateSelectFromValues("filterGradCredit", ALL_COURSES.map(filterCredit));
     // Find the Career Cluster column even if its header is worded a little differently
     // ("Career Clusters", "Career Cluster(s)", etc.).
     const headers = Object.keys(ALL_COURSES[0] || {});
@@ -668,7 +715,7 @@
       if (prereq === "yes" && !hasPrereq(c)) return false;
       if (prereq === "no"  &&  hasPrereq(c)) return false;
       if (length && lengthBucket(c) !== length) return false;
-      if (gradCred && gradCredit(c).toLowerCase() !== gradCred.toLowerCase()) return false;
+      if (gradCred && filterCredit(c).toLowerCase() !== gradCred.toLowerCase()) return false;
       return true;
     });
 
@@ -726,13 +773,13 @@
   }
 
   function buildPreviewTags(c, schoolKeys) {
-    const credit = gradCredit(c);
+    const credit = cardCreditLabel(c);
     // Delivery pills are shown only in the pop-up, not on cards.
     const tags = [];
     if (credit)
       tags.push(`<span class="tag-pill core">
         <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>
-        Credit: ${esc(credit)}</span>`);
+        ${esc(credit)}</span>`);
     if (c[F.program])
       tags.push(`<span class="tag-pill program">
         <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
