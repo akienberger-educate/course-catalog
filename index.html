@@ -525,8 +525,10 @@
 
   // NCA is an all-online school: any offering there is online.
   const ALL_ONLINE_SCHOOLS = new Set(["NCA HS"]);
-  // NCA's online courses are open to students at every school.
+  // NCA's online courses are open to students at these home schools (not BCCA,
+  // which isn't a home school), so checking either one also shows NCA courses.
   const OPEN_TO_ALL_SCHOOL = "NCA HS";
+  const NCA_OPEN_TO = ["Kennedy HS", "Jefferson HS"];
 
   function schoolStatus(val, schoolKey) {
     const v = (val || "").trim().toLowerCase();
@@ -694,9 +696,9 @@
     const grades     = [...document.querySelectorAll(".gradeCheck:checked")].map(cb => cb.value);
     const cluster    = document.getElementById("filterCareerCluster").value;
     const checked    = [...document.querySelectorAll(".schoolCheck:checked")].map(cb => cb.value);
-    // Students at any school can take New Code Academy online courses,
-    // so NCA is always included once a school is checked.
-    const schools    = checked.length && !checked.includes(OPEN_TO_ALL_SCHOOL)
+    // Kennedy and Jefferson students can take New Code Academy online courses,
+    // so NCA is added when either is checked. BCCA alone shows only BCCA courses.
+    const schools    = checked.some(s => NCA_OPEN_TO.includes(s)) && !checked.includes(OPEN_TO_ALL_SCHOOL)
                        ? [...checked, OPEN_TO_ALL_SCHOOL] : checked;
     const delivery   = [...document.querySelectorAll(".deliveryCheck:checked")].map(cb => cb.value);
     const prog       = document.getElementById("filterProgram").value;
