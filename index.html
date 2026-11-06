@@ -47,7 +47,8 @@
   }
   /* School logo grid (option D, Nov 5): four equal tiles, logo only, check badge
      in the corner. The real checkbox is visually hidden but still keyboard- and
-     screen-reader-accessible; the logo's alt text names the school. Logos are
+     screen-reader-accessible; the logo's alt text names the school. Logos load from
+     Google Drive (lh3 links; files must be shared "Anyone with the link"). Logos are
      shown unaltered (padding trimmed, scaled proportionally) per the brand guide. */
   .school-checks { flex: 1 1 100%; display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
   .school-checks label { position: relative; display: flex; align-items: center; justify-content: center; height: 100px; padding: 10px 34px; background: var(--white); border: 1.5px solid var(--border); border-radius: var(--radius); cursor: pointer; transition: border-color .15s, box-shadow .15s, background .15s; }
@@ -157,6 +158,7 @@
 
   .results-bar { font-size: .85rem; color: var(--muted); margin-bottom: 14px; }
   .results-bar strong { color: var(--text); }
+  .results-hint::before { content: " · "; }
 
   /* Grid */
   .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 16px; }
@@ -239,6 +241,12 @@
   .tag-pill.school-inperson{ background: rgba(143,143,143,.15); color: #222222; border: 1px solid #cecece; }
   .tag-pill.school-online  { background: rgba(143,143,143,.15); color: #222222; border: 1px solid #cecece; }
 
+  /* "Registration numbers & details →" label at the bottom of each card, so students
+     know the card opens. Blue on white = 4.58. Pinned to the card bottom so labels line up. */
+  .card-more { margin-top: auto; padding-top: 2px; font-size: .85rem; font-weight: 600; color: var(--blue); }
+  .card-more .arrow { display: inline-block; transition: transform .15s; }
+  .card:hover .card-more .arrow, .card:focus-visible .card-more .arrow { transform: translateX(3px); }
+
   .card h2 { font-family: var(--font-header); font-weight: 700; font-size: 1.3rem; line-height: 1.3; color: var(--bps-blue); }
 
   .description { font-size: .87rem; line-height: 1.6; color: #444444; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
@@ -284,10 +292,10 @@
   <fieldset class="school-bar">
     <legend>Choose Your School</legend>
     <div class="school-checks">
-      <label><input type="checkbox" class="schoolCheck" value="Kennedy HS" /><span class="check-badge" aria-hidden="true"></span><img src="logo-kennedy.png" alt="Kennedy High School" /></label>
-      <label><input type="checkbox" class="schoolCheck" value="Jefferson HS" /><span class="check-badge" aria-hidden="true"></span><img src="logo-jefferson.png" alt="Jefferson High School" /></label>
-      <label><input type="checkbox" class="schoolCheck" value="NCA HS" /><span class="check-badge" aria-hidden="true"></span><img src="logo-nca.png" alt="New Code Academy" /></label>
-      <label><input type="checkbox" class="schoolCheck" value="BCCA" /><span class="check-badge" aria-hidden="true"></span><img src="logo-bcca.png" alt="Career &amp; College Academy" /></label>
+      <label><input type="checkbox" class="schoolCheck" value="Kennedy HS" /><span class="check-badge" aria-hidden="true"></span><img src="https://lh3.googleusercontent.com/d/17mhaN3hq7VUDmDqog0ksNppwG8_a44pd=h160" referrerpolicy="no-referrer" alt="Kennedy High School" /></label>
+      <label><input type="checkbox" class="schoolCheck" value="Jefferson HS" /><span class="check-badge" aria-hidden="true"></span><img src="https://lh3.googleusercontent.com/d/1hy2ObTSFyzN4_lOCshjcB1ZMM5y3fR88=h160" referrerpolicy="no-referrer" alt="Jefferson High School" /></label>
+      <label><input type="checkbox" class="schoolCheck" value="NCA HS" /><span class="check-badge" aria-hidden="true"></span><img src="https://lh3.googleusercontent.com/d/1RVWlkCnI0nihhfABk_mPdbhgZEAKaAnT=h160" referrerpolicy="no-referrer" alt="New Code Academy" /></label>
+      <label><input type="checkbox" class="schoolCheck" value="BCCA" /><span class="check-badge" aria-hidden="true"></span><img src="https://lh3.googleusercontent.com/d/1QexAr9KK_mrPslKwYwvZVvZbn7lh_2av=h160" referrerpolicy="no-referrer" alt="Career &amp; College Academy" /></label>
     </div>
   </fieldset>
 </div>
@@ -370,7 +378,7 @@
     </div>
 
     <div id="mainContent" style="display:none">
-      <div class="results-bar" aria-live="polite"><strong id="countLabel">0</strong> courses found</div>
+      <div class="results-bar" aria-live="polite"><strong id="countLabel">0</strong> courses found<span class="results-hint">Click a course for registration numbers, prerequisites and more</span></div>
       <div class="grid" id="grid"></div>
     </div>
 
@@ -757,6 +765,7 @@
         </div>
         ${c[F.description] ? `<div class="description">${esc(c[F.description])}</div>` : ""}
         <div class="tag-row">${tags.join("")}</div>
+        <div class="card-more" aria-hidden="true">Registration numbers &amp; details <span class="arrow">→</span></div>
       </div>`;
     }).join("");
   }
