@@ -324,7 +324,7 @@
     </div>
 
     <div class="filter-group">
-      <label class="filter-label" for="filterGradCredit">Grad Required Category</label>
+      <label class="filter-label" for="filterGradCredit">Graduation Required Category</label>
       <select id="filterGradCredit"><option value="">All</option></select>
     </div>
 
@@ -427,7 +427,8 @@
     pathways:    "Pathways",
     careerCluster: "Career Clusters",
     description: "Course Description",
-    gradReq:     "Grad Requirement Category"
+    gradReq:     "Grad Requirement Category",
+    gradFilter:  "Graduation Required Category"  // column L; drives the sidebar filter only
   };
   const SCHOOLS = [
     { key: "Kennedy HS",   label: "Kennedy High School"   },
@@ -511,6 +512,11 @@
 
   // Credit category for the card pill and the Grad Required Category filter.
   // Tabs marked creditInPopupOnly (BCCA) return "" so they get neither.
+  // Graduation Required Category filter (Nov 10): reads its own column, from every tab.
+  function gradFilterValue(c) {
+    return (c[F.gradFilter] || "").trim();
+  }
+
   function filterCredit(c) {
     return c.__tab && c.__tab.creditInPopupOnly ? "" : gradCredit(c);
   }
@@ -611,7 +617,7 @@
     document.getElementById("schoolBarWrap").classList.add("visible");
 
     populateSelectFromValues("filterProgram", ALL_COURSES.flatMap(programs));
-    populateSelectFromValues("filterGradCredit", ALL_COURSES.map(filterCredit));
+    populateSelectFromValues("filterGradCredit", ALL_COURSES.map(gradFilterValue));
     // Find the Career Cluster column even if its header is worded a little differently
     // ("Career Clusters", "Career Cluster(s)", etc.).
     const headers = Object.keys(ALL_COURSES[0] || {});
@@ -734,7 +740,7 @@
       if (prereq === "yes" && !hasPrereq(c)) return false;
       if (prereq === "no"  &&  hasPrereq(c)) return false;
       if (length && lengthBucket(c) !== length) return false;
-      if (gradCred && filterCredit(c).toLowerCase() !== gradCred.toLowerCase()) return false;
+      if (gradCred && gradFilterValue(c).toLowerCase() !== gradCred.toLowerCase()) return false;
       return true;
     });
 
