@@ -427,7 +427,8 @@
     pathways:    "Pathways",
     careerCluster: "Career Clusters",
     description: "Course Description",
-    gradReq:     "Grad Requirement Category",
+    gradReq:     "Grad Requirement Category",       // old header; still used if the new one is blank (e.g. BCCA tab)
+    gradCredit:  "Graduation Requirement Credit",  // gold Credit pill on cards and in the pop-up (Nov 10)
     gradFilter:  "Graduation Required Category"  // column L; drives the sidebar filter only
   };
   const SCHOOLS = [
@@ -507,7 +508,7 @@
   }
 
   function gradCredit(c) {
-    return (c[F.gradReq] || "").trim();
+    return (c[F.gradCredit] || c[F.gradReq] || "").trim();
   }
 
   // Credit category for the card pill and the Grad Required Category filter.
