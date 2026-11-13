@@ -125,6 +125,8 @@
   .grade-checks input[type="checkbox"] { accent-color: var(--blue); cursor: pointer; width: 15px; height: 15px; }
   /* Prerequisite radio buttons (Nov 13): stacked, one choice at a time. */
   .prereq-radios { flex-direction: column; gap: 8px; }
+  /* Delivery checkboxes (Nov 13): stacked, since the online labels are long. */
+  .delivery-checks { flex-direction: column; gap: 8px; }
   .grade-checks input[type="radio"] { accent-color: var(--blue); cursor: pointer; width: 15px; height: 15px; margin: 0; }
 
   .sidebar-divider { border: none; border-top: 1px solid var(--border); margin: 18px 0; }
@@ -221,6 +223,9 @@
   .modal-reg-row.inperson .reg-label { color: #007db3; } /* 4.58 on white */
   .modal-reg-row.online   .reg-label { color: #3c0086; } /* 13.67 */
   .reg-codes { font-size: .95rem; font-weight: 600; color: #222222; letter-spacing: .02em; }
+  /* Online format line under the Online row (Nov 13). #595959 on white = 7.0 */
+  .reg-note { flex-basis: 100%; order: 3; font-size: .82rem; line-height: 1.45; color: #595959; }
+  .reg-note strong { color: #222222; }
   .reg-copy { margin-left: auto; font-family: inherit; font-size: .78rem; color: #595959; background: var(--white); border: 1px solid #cecece; border-radius: 6px; padding: 4px 10px; cursor: pointer; transition: border-color .15s, color .15s; }
   .reg-copy:hover { border-color: var(--blue); color: var(--blue); }
   .reg-copy:focus-visible { outline: 2.5px solid var(--blue); outline-offset: 2px; }
@@ -333,9 +338,10 @@
 
     <div class="filter-group">
       <label class="filter-label">Delivery</label>
-      <div class="grade-checks">
+      <div class="grade-checks delivery-checks">
         <label><input type="checkbox" class="deliveryCheck" value="inperson" /> In-Person</label>
-        <label><input type="checkbox" class="deliveryCheck" value="online" /> Online</label>
+        <label><input type="checkbox" class="deliveryCheck" value="live" /> Online – Live class meetings</label>
+        <label><input type="checkbox" class="deliveryCheck" value="selfpaced" /> Online – Self-paced</label>
       </div>
     </div>
 
@@ -432,7 +438,8 @@
     description: "Course Description",
     gradReq:     "Grad Requirement Category",       // old header; still used if the new one is blank (e.g. BCCA tab)
     gradCredit:  "Graduation Requirement Credit",  // gold Credit pill on cards and in the pop-up (Nov 10)
-    gradFilter:  "Graduation Required Category"  // column L; drives the sidebar filter only
+    gradFilter:  "Graduation Required Category",  // column L; drives the sidebar filter only
+    virtual:     "Online Format"  // Synchronous = live online, Async = self-paced (Nov 13)
   };
   const SCHOOLS = [
     { key: "Kennedy HS",   label: "Kennedy High School"   },
@@ -561,6 +568,21 @@
     return v !== "" && v !== "none" && v !== "no" && v !== "n/a";
   }
 
+  // Online format (Nov 13), from the "Online Format" column.
+  // Synchronous = live (required Google Meet class meetings during a scheduled period);
+  // Async / Asynchronous = self-paced (weekly assignments, no required meetings).
+  // Common misspellings ("Sycronous", "Asyncronous") are accepted. Blank = unknown.
+  function onlineFormat(c) {
+    const v = (c[F.virtual] || "").trim().toLowerCase();
+    if (/^a\s*-?\s*syn?c/.test(v)) return "selfpaced";
+    if (/^syn?c/.test(v)) return "live";
+    return "";
+  }
+  const FORMAT_NOTES = {
+    live:      "<strong>Live class:</strong> Required virtual class meetings (Google Meet) during a scheduled class period.",
+    selfpaced: "<strong>Self-paced:</strong> No required class meetings. Assignments are due each week."
+  };
+
   const LENGTH_LABELS = { "1": "1 Trimester", "2": "2 Trimesters", "full": "Full Year (3 Trimesters)" };
 
   function lengthBucket(c) {
@@ -631,6 +653,14 @@
       else console.warn("[Course Catalog] No Career Cluster column found. Headers:", headers);
     }
     populateSelectFromValues("filterCareerCluster", ALL_COURSES.flatMap(careerClusters));
+    // Flag online courses whose live / self-paced format isn't filled in.
+    if (!headers.includes(F.virtual))
+      console.warn(`[Course Catalog] No "${F.virtual}" column found, so online courses show no format.`);
+    else {
+      const missing = ALL_COURSES.filter(c => modality(c, []).online && !onlineFormat(c));
+      if (missing.length) console.warn(`[Course Catalog] ${missing.length} online course(s) have a blank or unreadable "${F.virtual}" cell:`,
+        missing.map(c => `${c[F.number] || "?"} ${c[F.name] || ""}`.trim()));
+    }
 
     ["search","filterCareerCluster","filterProgram",
      "filterLength","filterGradCredit"]
@@ -738,8 +768,11 @@
         // Checks only the chosen schools (all schools if none are checked).
         // A course matches if it's offered in any of the checked ways.
         const m = modality(c, schools);
-        if (!((delivery.includes("online") && m.online) ||
-              (delivery.includes("inperson") && m.inPerson))) return false;
+        // Online courses with a blank format still match either Online box.
+        const fmt = onlineFormat(c);
+        const onlineHit = m.online && (fmt ? delivery.includes(fmt)
+                                           : delivery.includes("live") || delivery.includes("selfpaced"));
+        if (!(onlineHit || (delivery.includes("inperson") && m.inPerson))) return false;
       }
       if (prog && !programs(c).some(v => v.toLowerCase() === prog.toLowerCase())) return false;
       if (prereq === "yes" && !hasPrereq(c)) return false;
@@ -849,6 +882,7 @@
         <span class="reg-label">${label}</span>
         <span class="reg-codes">${esc(codes)}</span>
         <button type="button" class="reg-copy" data-copy="${esc(codes)}" aria-label="Copy ${label} course numbers">Copy</button>
+        ${online && FORMAT_NOTES[onlineFormat(c)] ? `<div class="reg-note">${FORMAT_NOTES[onlineFormat(c)]}</div>` : ""}
       </div>`;
     };
     if (!(c[F.number] || "").trim() || !(m.inPerson || m.online)) return "";
