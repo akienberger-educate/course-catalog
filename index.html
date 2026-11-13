@@ -123,6 +123,9 @@
   .grade-checks { display: flex; flex-wrap: wrap; gap: 10px 14px; }
   .grade-checks label { display: flex; align-items: center; gap: 5px; font-size: .85rem; color: var(--text); cursor: pointer; }
   .grade-checks input[type="checkbox"] { accent-color: var(--blue); cursor: pointer; width: 15px; height: 15px; }
+  /* Prerequisite radio buttons (Nov 13): stacked, one choice at a time. */
+  .prereq-radios { flex-direction: column; gap: 8px; }
+  .grade-checks input[type="radio"] { accent-color: var(--blue); cursor: pointer; width: 15px; height: 15px; margin: 0; }
 
   .sidebar-divider { border: none; border-top: 1px solid var(--border); margin: 18px 0; }
 
@@ -347,12 +350,12 @@
     </div>
 
     <div class="filter-group">
-      <label class="filter-label" for="filterPrereq">Prerequisite</label>
-      <select id="filterPrereq">
-        <option value="">All</option>
-        <option value="yes">Has Prerequisite</option>
-        <option value="no">No Prerequisite</option>
-      </select>
+      <div class="filter-label" id="prereqLabel">Prerequisite</div>
+      <div class="grade-checks prereq-radios" role="radiogroup" aria-labelledby="prereqLabel">
+        <label><input type="radio" name="prereq" class="prereqRadio" value="" checked /> All</label>
+        <label><input type="radio" name="prereq" class="prereqRadio" value="yes" /> Has Prerequisite</label>
+        <label><input type="radio" name="prereq" class="prereqRadio" value="no" /> No Prerequisite</label>
+      </div>
     </div>
 
     <div class="filter-group">
@@ -630,16 +633,17 @@
     populateSelectFromValues("filterCareerCluster", ALL_COURSES.flatMap(careerClusters));
 
     ["search","filterCareerCluster","filterProgram",
-     "filterPrereq","filterLength","filterGradCredit"]
+     "filterLength","filterGradCredit"]
       .forEach(id => document.getElementById(id).addEventListener("input", render));
 
-    document.querySelectorAll(".gradeCheck, .schoolCheck, .deliveryCheck").forEach(cb => cb.addEventListener("change", render));
+    document.querySelectorAll(".gradeCheck, .schoolCheck, .deliveryCheck, .prereqRadio").forEach(cb => cb.addEventListener("change", render));
 
     document.getElementById("clearBtn").addEventListener("click", () => {
       document.getElementById("search").value = "";
       ["filterCareerCluster","filterProgram",
-       "filterPrereq","filterLength","filterGradCredit"]
+       "filterLength","filterGradCredit"]
         .forEach(id => document.getElementById(id).value = "");
+      document.querySelector('.prereqRadio[value=""]').checked = true;
       document.querySelectorAll(".gradeCheck, .schoolCheck, .deliveryCheck").forEach(cb => cb.checked = false);
       render();
     });
@@ -717,7 +721,7 @@
                        ? [...checked, OPEN_TO_ALL_SCHOOL] : checked;
     const delivery   = [...document.querySelectorAll(".deliveryCheck:checked")].map(cb => cb.value);
     const prog       = document.getElementById("filterProgram").value;
-    const prereq     = document.getElementById("filterPrereq").value;
+    const prereq     = (document.querySelector(".prereqRadio:checked") || {}).value || "";
     const length     = document.getElementById("filterLength").value;
     const gradCred   = document.getElementById("filterGradCredit").value;
 
